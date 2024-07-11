@@ -4,6 +4,7 @@ var Eisdealer;
     window.addEventListener("load", handleLoad);
     window.addEventListener("DOMContentLoaded", () => {
     });
+    let drawable = [];
     function handleLoad(_event) {
         console.log("handleLoad");
         // Zugriff auf das Canvas-Element
@@ -12,25 +13,34 @@ var Eisdealer;
             return;
         Eisdealer.crc2 = canvas.getContext("2d");
         canvas.addEventListener("click", handleClick);
+        let trash = new Eisdealer.Trash(470, 170);
+        drawable.push(trash);
+        let chair1 = new Eisdealer.Chair(120, 400);
+        drawable.push(chair1);
+        const chair2 = new Eisdealer.Chair(330, 500);
+        drawable.push(chair2);
+        const chair3 = new Eisdealer.Chair(530, 350);
+        drawable.push(chair3);
         setInterval(animate, 20);
-        //drawCustomer();
-        //drawEisdealer();
     }
     function animate() {
         drawBackround();
-        // Trash zeichnen
-        const trash = new Eisdealer.Trash(470, 170, 50);
-        trash.draw();
+        drawable.forEach(drawable => {
+            drawable.draw();
+        });
+        // // Trash zeichnen
+        // const trash = new Trash(470, 170, 50);
+        // trash.draw();
         //Sccops zeichnen
         const scoops = new Eisdealer.Scoop();
         scoops.draw();
-        //Stühle zeichnen
-        const chair1 = new Eisdealer.Chair(120, 400, 100, 100);
-        chair1.draw();
-        const chair2 = new Eisdealer.Chair(330, 500, 100, 100);
-        chair2.draw();
-        const chair3 = new Eisdealer.Chair(530, 350, 100, 100);
-        chair3.draw();
+        // //Stühle zeichnen
+        // const chair1 = new Chair(120, 400);
+        // chair1.draw();
+        // const chair2 = new Chair(330, 500);
+        // chair2.draw();
+        // const chair3 = new Chair(530, 350);
+        // chair3.draw();
         const eisdealer = new Eisdealer.Eisdealer(300, 400);
         eisdealer.draw();
         const customer = new Eisdealer.Customer(700, 400, "#52402a");

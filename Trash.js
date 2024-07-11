@@ -1,13 +1,10 @@
 "use strict";
 var Eisdealer;
 (function (Eisdealer) {
-    class Trash {
-        x;
-        y;
+    class Trash extends Eisdealer.Drawables {
         radius;
-        constructor(_x, _y, _radius) {
-            this.x = 470;
-            this.y = 170;
+        constructor(_x, _y) {
+            super(_x, _y);
             this.radius = 50;
         }
         draw() {

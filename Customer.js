@@ -58,6 +58,9 @@ var Eisdealer;
             Eisdealer.crc2.strokeStyle = '#000000';
             Eisdealer.crc2.stroke();
         }
+        update() {
+            // Hier könnten z.B. Animationen oder andere Veränderungen des Kunden implementiert werden
+        }
     }
     Eisdealer.Customer = Customer;
 })(Eisdealer || (Eisdealer = {}));

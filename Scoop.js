@@ -11,7 +11,7 @@ var Eisdealer;
             Eisdealer.crc2.lineWidth = 8;
             const x = 80;
             const y = 100;
-            const color = "#ab433a";
+            const color = "#eb3477";
             Eisdealer.crc2.beginPath();
             Eisdealer.crc2.arc(x, y, 50, 0, Math.PI * 2);
             Eisdealer.crc2.fillStyle = color;

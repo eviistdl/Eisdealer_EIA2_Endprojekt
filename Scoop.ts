@@ -10,7 +10,7 @@ namespace Eisdealer {
             crc2.lineWidth = 8;
             const x = 80;
             const y = 100;
-            const color = "#ab433a";
+            const color = "#eb3477";
 
             crc2.beginPath();
             crc2.arc(x, y, 50, 0, Math.PI * 2);

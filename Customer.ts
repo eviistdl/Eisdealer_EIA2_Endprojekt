@@ -64,5 +64,9 @@ namespace Eisdealer {
             crc2.strokeStyle = '#000000';
             crc2.stroke();
         }
+        
+        update(): void {
+            // Hier könnten z.B. Animationen oder andere Veränderungen des Kunden implementiert werden
+        }
     }
 }

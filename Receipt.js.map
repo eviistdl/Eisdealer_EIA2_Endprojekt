@@ -1,1 +1,1 @@
-{"version":3,"file":"Receipt.js","sourceRoot":"","sources":["Receipt.ts"],"names":[],"mappings":""}
+{"version":3,"file":"Receipt.js","sourceRoot":"","sources":["Receipt.ts"],"names":[],"mappings":";AAAA,IAAU,SAAS,CAUlB;AAVD,WAAU,SAAS;IAEf,MAAa,OAAQ,SAAQ,UAAA,SAAS;QAGlC,YAAY,EAAU,EAAE,EAAU,EAAE,MAAc;YAC9C,KAAK,CAAE,EAAE,EAAE,EAAE,CAAC,CAAC;QAEnB,CAAC;KACJ;IAPY,iBAAO,UAOnB,CAAA;AACL,CAAC,EAVS,SAAS,KAAT,SAAS,QAUlB"}

@@ -1,13 +1,10 @@
 namespace Eisdealer {
 
-    export class Trash{
-    private x: number;
-    private y: number;
+    export class Trash extends Drawables{
     private radius: number;
 
-    constructor(_x: number, _y: number, _radius: number) {
-        this.x = 470;
-        this.y = 170;
+    constructor(_x: number, _y: number) {
+        super(_x, _y);
         this.radius = 50;
     }
 
