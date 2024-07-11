@@ -1,17 +1,51 @@
 namespace Eisdealer {
-    export class Customer {
-        private x: number;
-        private y: number;
+    export class Customer extends Moveables {
         private radius: number;
         private skin: string;
         private hairColor: string;
+        private targetChair: Chair | null;
+        private allObjects: Drawables[];
 
-        constructor(_x: number, _y: number, _hairColor: string) {
-            this.x = _x;
-            this.y = _y;
+
+        constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string, allObjects: Drawables[]) {
+            super (_x, _y, _direction, _speed, _type)
             this.radius = 40;
             this.skin = "#e8d3b7";
             this.hairColor = "#52402a";
+            this.targetChair = null;
+            this.allObjects = allObjects;
+        }
+
+        public move(): void {
+            console.log("customer move");
+            if (!this.targetChair || this.targetChair.isOccupied()) {
+                this.findNextUnoccupiedChair();
+            }
+
+            if (this.targetChair) {
+                const dx = this.targetChair.x - this.x + 50;
+                const dy = this.targetChair.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const moveDistance = Math.min(this.speed.x, distance);
+
+                this.x += (dx / distance) * moveDistance;
+                this.y += (dy / distance) * moveDistance;
+
+                if (distance < this.speed.x) {
+                    this.targetChair.occupy();
+                    this.speed = new Vector(0, 0);
+                    this.targetChair = null;
+                }
+            }
+        }
+
+        private findNextUnoccupiedChair(): void {
+            for (const obj of this.allObjects) {
+                if (obj instanceof Chair && !obj.isOccupied()) {
+                    this.targetChair = obj;
+                    break;
+                }
+            }
         }
 
         draw(): void {
@@ -66,7 +100,6 @@ namespace Eisdealer {
         }
         
         update(): void {
-            // Hier könnten z.B. Animationen oder andere Veränderungen des Kunden implementiert werden
         }
     }
 }

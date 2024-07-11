@@ -6,7 +6,8 @@ namespace Eisdealer {
     window.addEventListener("DOMContentLoaded", () => { 
     });
 
-    let drawable: Drawables[] = [];
+    export let allObjects: Drawables[] = [];
+    let targetPosition: Vector = new Vector(0, 0);
 
     function handleLoad(_event: Event): void {
         console.log("handleLoad")
@@ -19,14 +20,28 @@ namespace Eisdealer {
         canvas.addEventListener("click", handleClick);
 
         let trash: Trash = new Trash(470, 170);
-        drawable.push(trash);
+        allObjects.push(trash);
 
         let chair1: Chair = new Chair(120, 400);
-        drawable.push(chair1);
+        allObjects.push(chair1);
         const chair2: Chair = new Chair(330, 500);
-        drawable.push(chair2);
+        allObjects.push(chair2);
         const chair3: Chair = new Chair(530, 350);
-        drawable.push(chair3);
+        allObjects.push(chair3);
+
+        // Eisdealer erstellen und hinzufügen
+        let eisdealer = new Eisdealer(300, 400, new Vector(0, 0), new Vector(5, 5), "Eisdealer");
+        allObjects.push(eisdealer);
+
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                let customerX = 800 + i * 50; // Versatz für unterschiedliche Startpositionen
+                let customerY = 600;
+                let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${i + 1}`, allObjects);
+                allObjects.push(customer);
+    
+            }, i * 3000); 
+        }
 
         setInterval(animate, 20);
 
@@ -35,31 +50,35 @@ namespace Eisdealer {
     function animate(): void {
         drawBackround();
 
-        drawable.forEach(drawable => {
+        allObjects.forEach(drawable => {
             drawable.draw();
+            if (drawable instanceof Eisdealer) {
+                drawable.move();
+            }
+            if (drawable instanceof Customer) {
+                drawable.move();
+            }
         });
-
-        // // Trash zeichnen
-        // const trash = new Trash(470, 170, 50);
-        // trash.draw();
 
         //Sccops zeichnen
         const scoops = new Scoop();
         scoops.draw();
+    }
 
-        // //Stühle zeichnen
-        // const chair1 = new Chair(120, 400);
-        // chair1.draw();
-        // const chair2 = new Chair(330, 500);
-        // chair2.draw();
-        // const chair3 = new Chair(530, 350);
-        // chair3.draw();
+    // Definition der Hindernisse
+    const noGoZone1 = { x: 0, y: 0, width: 440, height: 240 };
 
-        const eisdealer = new Eisdealer(300, 400);
-        eisdealer.draw();
+     // Funktion zur Kollisionserkennung
+     export function collisionNoGoZone(x: number, y: number): boolean {
+        // Prüfen, ob der Punkt im Bereich des Eiswagens liegt
+        if (
+            x > noGoZone1.x && x < noGoZone1.x + noGoZone1.width &&
+            y > noGoZone1.y && y < noGoZone1.y + noGoZone1.height
+        ) {
+            return true;
+        }
 
-        const customer = new Customer(700, 400, "#52402a");
-        customer.draw();
+        return false;
     }
     
 
@@ -120,6 +139,16 @@ namespace Eisdealer {
         let canvasRect = (event.target as HTMLCanvasElement).getBoundingClientRect(); 
         let clickX = event.clientX - canvasRect.left;
         let clickY = event.clientY - canvasRect.top;
+
+         // Setze die Zielposition für Eisdealer
+         targetPosition = new Vector(clickX, clickY);
+
+         // Übergib die Zielposition an den Eisdealer
+            allObjects.forEach(item => {
+            if (item instanceof Eisdealer) {
+            item.setTarget(targetPosition);
+            }
+        });
 
         console.log(`Clicked at position: (${clickX}, ${clickY})`);
     }

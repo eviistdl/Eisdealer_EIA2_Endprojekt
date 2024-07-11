@@ -9,6 +9,7 @@ namespace Eisdealer {
         }
 
         abstract draw(): void;
+
         update(): void {
             this.draw();
         }

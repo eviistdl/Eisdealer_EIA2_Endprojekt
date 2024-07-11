@@ -1,18 +1,46 @@
 "use strict";
 var Eisdealer;
 (function (Eisdealer) {
-    class Customer {
-        x;
-        y;
+    class Customer extends Eisdealer.Moveables {
         radius;
         skin;
         hairColor;
-        constructor(_x, _y, _hairColor) {
-            this.x = _x;
-            this.y = _y;
+        targetChair;
+        allObjects;
+        constructor(_x, _y, _direction, _speed, _type, allObjects) {
+            super(_x, _y, _direction, _speed, _type);
             this.radius = 40;
             this.skin = "#e8d3b7";
             this.hairColor = "#52402a";
+            this.targetChair = null;
+            this.allObjects = allObjects;
+        }
+        move() {
+            console.log("customer move");
+            if (!this.targetChair || this.targetChair.isOccupied()) {
+                this.findNextUnoccupiedChair();
+            }
+            if (this.targetChair) {
+                const dx = this.targetChair.x - this.x + 50;
+                const dy = this.targetChair.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const moveDistance = Math.min(this.speed.x, distance);
+                this.x += (dx / distance) * moveDistance;
+                this.y += (dy / distance) * moveDistance;
+                if (distance < this.speed.x) {
+                    this.targetChair.occupy();
+                    this.speed = new Eisdealer.Vector(0, 0);
+                    this.targetChair = null;
+                }
+            }
+        }
+        findNextUnoccupiedChair() {
+            for (const obj of this.allObjects) {
+                if (obj instanceof Eisdealer.Chair && !obj.isOccupied()) {
+                    this.targetChair = obj;
+                    break;
+                }
+            }
         }
         draw() {
             const x = this.x;
@@ -59,7 +87,6 @@ var Eisdealer;
             Eisdealer.crc2.stroke();
         }
         update() {
-            // Hier könnten z.B. Animationen oder andere Veränderungen des Kunden implementiert werden
         }
     }
     Eisdealer.Customer = Customer;

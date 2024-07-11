@@ -1,20 +1,43 @@
 "use strict";
 var Eisdealer;
 (function (Eisdealer_1) {
-    class Eisdealer {
-        x;
-        y;
+    class Eisdealer extends Eisdealer_1.Moveables {
         radius;
         skin;
         hairColor;
         mustacheColor;
-        constructor(_x, _y) {
-            this.x = _x;
+        target;
+        constructor(_x, _y, _direction, _speed, _type) {
+            super(_x, _y, _direction, _speed, _type);
             this.y = _y;
             this.radius = 40;
             this.skin = "#f5cda2";
             this.hairColor = "#170f05";
             this.mustacheColor = "#170f05";
+            this.target = null;
+        }
+        setTarget(target) {
+            this.target = target;
+        }
+        move() {
+            if (this.target) {
+                const dx = this.target.x - this.x;
+                const dy = this.target.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const moveDistance = Math.min(this.speed.x, distance);
+                const nextX = this.x + (dx / distance) * moveDistance;
+                const nextY = this.y + (dy / distance) * moveDistance;
+                if (!Eisdealer_1.collisionNoGoZone(nextX, nextY)) {
+                    this.x = nextX;
+                    this.y = nextY;
+                }
+                else {
+                    this.target = null; // Ziel aufgeben, wenn eine Kollision festgestellt wird
+                }
+                if (distance < this.speed.x) {
+                    this.target = null;
+                }
+            }
         }
         draw() {
             const x = this.x;

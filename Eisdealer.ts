@@ -1,28 +1,56 @@
 namespace Eisdealer {
-    export class Eisdealer {
-        private x: number;
-        private y: number;
+    export class Eisdealer extends Moveables {
         private radius: number;
         private skin: string;
         private hairColor: string;
         private mustacheColor: string;
+        private target: Vector | null;
 
-        constructor(_x: number, _y: number) {
-            this.x = _x;
+        constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string) {
+            super (_x, _y, _direction, _speed, _type)
             this.y = _y;
             this.radius = 40;
             this.skin = "#f5cda2";
             this.hairColor = "#170f05";
             this.mustacheColor = "#170f05";
+            this.target = null;
         }
 
+        public setTarget(target: Vector): void {
+            this.target = target;
+        }
+
+        public move(): void {
+            if (this.target) {
+                const dx = this.target.x - this.x;
+                const dy = this.target.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const moveDistance = Math.min(this.speed.x, distance);
+
+                const nextX = this.x + (dx / distance) * moveDistance;
+                const nextY = this.y + (dy / distance) * moveDistance;
+
+                if (!collisionNoGoZone(nextX, nextY)) {
+                    this.x = nextX;
+                    this.y = nextY;
+                } else {
+                    this.target = null; // Ziel aufgeben, wenn eine Kollision festgestellt wird
+                }
+
+                if (distance < this.speed.x) {
+                    this.target = null;
+                }
+            }
+        }
+        
+
         draw(): void {
-            const x = this.x;
-            const y = this.y;
-            const radius = this.radius;
-            const skin = this.skin;
-            const hairColor = this.hairColor;
-            const mustacheColor = this.mustacheColor;
+        const x = this.x;
+        const y = this.y;
+        const radius = this.radius;
+        const skin = this.skin;
+        const hairColor = this.hairColor;
+        const mustacheColor = this.mustacheColor;
 
                 // Haare 
         crc2.beginPath();
