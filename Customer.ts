@@ -6,7 +6,6 @@ namespace Eisdealer {
         private targetChair: Chair | null;
         private allObjects: Drawables[];
 
-
         constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string, allObjects: Drawables[]) {
             super (_x, _y, _direction, _speed, _type)
             this.radius = 40;
