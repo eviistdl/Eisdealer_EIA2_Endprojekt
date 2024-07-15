@@ -16,7 +16,7 @@ var Eisdealer;
             this.allObjects = allObjects;
         }
         move() {
-            console.log("customer move");
+            //console.log("customer move");
             if (!this.targetChair || this.targetChair.isOccupied()) {
                 this.findNextUnoccupiedChair();
             }

@@ -8,6 +8,7 @@ namespace Eisdealer {
 
     export let allObjects: Drawables[] = [];
     let targetPosition: Vector = new Vector(0, 0);
+    let chosenScoops: ScoopChosen[] = [];
 
     function handleLoad(_event: Event): void {
         console.log("handleLoad")
@@ -29,13 +30,20 @@ namespace Eisdealer {
         const chair3: Chair = new Chair(530, 350);
         allObjects.push(chair3);
 
+        const pistacchio: Scoop = new Scoop(80, 100, "#87b07b")
+        allObjects.push(pistacchio);
+        const strawberry: Scoop = new Scoop(200, 100, "#eb3477")
+        allObjects.push(strawberry);
+        const lemon: Scoop = new Scoop(320, 100, "#f7dd31")
+        allObjects.push(lemon);
+
         // Eisdealer erstellen und hinzufügen
         let eisdealer = new Eisdealer(300, 400, new Vector(0, 0), new Vector(5, 5), "Eisdealer");
         allObjects.push(eisdealer);
 
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
-                let customerX = 800 + i * 50; // Versatz für unterschiedliche Startpositionen
+                let customerX = 500 ; // Versatz für unterschiedliche Startpositionen
                 let customerY = 600;
                 let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${i + 1}`, allObjects);
                 allObjects.push(customer);
@@ -60,9 +68,16 @@ namespace Eisdealer {
             }
         });
 
-        //Sccops zeichnen
-        const scoops = new Scoop();
-        scoops.draw();
+        chosenScoops.forEach(scoop => {
+            scoop.draw();
+        });
+        
+        // Zeichne den Cup, falls ScoopChosen vorhanden sind
+        if (chosenScoops.length > 0) {
+            let cup = new Cup(800, 400);
+            allObjects.push(cup); // Cup wird direkt nach dem ersten ScoopChosen gezeichnet
+            cup.draw();
+        }
     }
 
     // Definition der Hindernisse
@@ -79,6 +94,71 @@ namespace Eisdealer {
         }
 
         return false;
+    }
+        
+
+    export function handleClick(event: MouseEvent): void {
+        let canvasRect = (event.target as HTMLCanvasElement).getBoundingClientRect(); 
+        let clickX = event.clientX - canvasRect.left;
+        let clickY = event.clientY - canvasRect.top;
+    
+        // Setze die Zielposition für Eisdealer
+        targetPosition = new Vector(clickX, clickY);
+    
+        // Übergib die Zielposition an den Eisdealer
+        allObjects.forEach(item => {
+            if (item instanceof Eisdealer) {
+                item.setTarget(targetPosition);
+            }
+        });
+    
+        // Prüfen ob ein Scoop angeklickt wurde und ob noch Platz für weitere Scoops ist
+        const scoopRadius = 50;
+        const maxScoops = 4; 
+        const scoopPositions = [
+            { x: 875, y: 450 },
+            { x: 875, y: 420 },
+            { x: 875, y: 390 },
+            { x: 875, y: 360 }
+        ];
+    
+        // Prüfen, ob der Eisdealer sich im richtigen Bereich befindet
+        const chooseScoopArea = { xMin: 0, xMax: 400, yMin: 180, yMax: 250 };
+        let iceDealerInArea = false;
+    
+        allObjects.forEach(item => {
+            if (item instanceof Eisdealer) {
+                if (item.x >= chooseScoopArea.xMin && item.x <= chooseScoopArea.xMax &&
+                    item.y >= chooseScoopArea.yMin && item.y <= chooseScoopArea.yMax) {
+                    iceDealerInArea = true;
+                }
+            }
+        });
+    
+        if (iceDealerInArea) {
+            if (chosenScoops.length < maxScoops) {
+                for (const item of allObjects) {
+                    if (item instanceof Scoop) {
+                        const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
+                        if (distance <= scoopRadius) {
+                            let chosenScoop = new ScoopChosen(scoopPositions[chosenScoops.length].x, scoopPositions[chosenScoops.length].y, item.color);
+                            chosenScoops.push(chosenScoop);
+                            allObjects.push(chosenScoop);
+    
+                            // Cup wird direkt nach dem ersten ScoopChosen gezeichnet
+                            if (chosenScoops.length === 1) {
+                                let cup = new Cup(800, 400);
+                                allObjects.push(cup);
+                            }
+    
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    
+        console.log(`Clicked at position: (${clickX}, ${clickY})`);
     }
     
 
@@ -130,26 +210,11 @@ namespace Eisdealer {
             crc2.lineTo(x2, y2);
             crc2.strokeStyle = '#FFFFFF';
             crc2.stroke();
-            }
+        }
+
+        crc2.fillStyle = '#ffffff'; 
+        crc2.fillRect(700, 0, 300, 600); 
+
         }); 
-    }
-        
-
-    export function handleClick(event: MouseEvent): void {
-        let canvasRect = (event.target as HTMLCanvasElement).getBoundingClientRect(); 
-        let clickX = event.clientX - canvasRect.left;
-        let clickY = event.clientY - canvasRect.top;
-
-         // Setze die Zielposition für Eisdealer
-         targetPosition = new Vector(clickX, clickY);
-
-         // Übergib die Zielposition an den Eisdealer
-            allObjects.forEach(item => {
-            if (item instanceof Eisdealer) {
-            item.setTarget(targetPosition);
-            }
-        });
-
-        console.log(`Clicked at position: (${clickX}, ${clickY})`);
     }
 }

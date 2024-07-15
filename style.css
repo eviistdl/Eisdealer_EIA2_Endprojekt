@@ -1,0 +1,7 @@
+body {
+    background-color:rgb(176, 63, 131);
+}
+
+canvas {
+    border: 5px solid rgb(176, 63, 131); /* Optional: adds a white border around the canvas */
+}

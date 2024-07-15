@@ -6,6 +6,7 @@ var Eisdealer;
     });
     Eisdealer.allObjects = [];
     let targetPosition = new Eisdealer.Vector(0, 0);
+    let chosenScoops = [];
     function handleLoad(_event) {
         console.log("handleLoad");
         // Zugriff auf das Canvas-Element
@@ -22,12 +23,18 @@ var Eisdealer;
         Eisdealer.allObjects.push(chair2);
         const chair3 = new Eisdealer.Chair(530, 350);
         Eisdealer.allObjects.push(chair3);
+        const pistacchio = new Eisdealer.Scoop(80, 100, "#87b07b");
+        Eisdealer.allObjects.push(pistacchio);
+        const strawberry = new Eisdealer.Scoop(200, 100, "#eb3477");
+        Eisdealer.allObjects.push(strawberry);
+        const lemon = new Eisdealer.Scoop(320, 100, "#f7dd31");
+        Eisdealer.allObjects.push(lemon);
         // Eisdealer erstellen und hinzufügen
         let eisdealer = new Eisdealer.Eisdealer(300, 400, new Eisdealer.Vector(0, 0), new Eisdealer.Vector(5, 5), "Eisdealer");
         Eisdealer.allObjects.push(eisdealer);
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
-                let customerX = 800 + i * 50; // Versatz für unterschiedliche Startpositionen
+                let customerX = 500; // Versatz für unterschiedliche Startpositionen
                 let customerY = 600;
                 let customer = new Eisdealer.Customer(customerX, customerY, new Eisdealer.Vector(0, 0), new Eisdealer.Vector(4, 4), `Customer ${i + 1}`, Eisdealer.allObjects);
                 Eisdealer.allObjects.push(customer);
@@ -46,9 +53,15 @@ var Eisdealer;
                 drawable.move();
             }
         });
-        //Sccops zeichnen
-        const scoops = new Eisdealer.Scoop();
-        scoops.draw();
+        chosenScoops.forEach(scoop => {
+            scoop.draw();
+        });
+        // Zeichne den Cup, falls ScoopChosen vorhanden sind
+        if (chosenScoops.length > 0) {
+            let cup = new Eisdealer.Cup(800, 400);
+            Eisdealer.allObjects.push(cup); // Cup wird direkt nach dem ersten ScoopChosen gezeichnet
+            cup.draw();
+        }
     }
     // Definition der Hindernisse
     const noGoZone1 = { x: 0, y: 0, width: 440, height: 240 };
@@ -62,6 +75,61 @@ var Eisdealer;
         return false;
     }
     Eisdealer.collisionNoGoZone = collisionNoGoZone;
+    function handleClick(event) {
+        let canvasRect = event.target.getBoundingClientRect();
+        let clickX = event.clientX - canvasRect.left;
+        let clickY = event.clientY - canvasRect.top;
+        // Setze die Zielposition für Eisdealer
+        targetPosition = new Eisdealer.Vector(clickX, clickY);
+        // Übergib die Zielposition an den Eisdealer
+        Eisdealer.allObjects.forEach(item => {
+            if (item instanceof Eisdealer.Eisdealer) {
+                item.setTarget(targetPosition);
+            }
+        });
+        // Prüfen ob ein Scoop angeklickt wurde und ob noch Platz für weitere Scoops ist
+        const scoopRadius = 50;
+        const maxScoops = 4;
+        const scoopPositions = [
+            { x: 875, y: 450 },
+            { x: 875, y: 420 },
+            { x: 875, y: 390 },
+            { x: 875, y: 360 }
+        ];
+        // Prüfen, ob der Eisdealer sich im richtigen Bereich befindet
+        const chooseScoopArea = { xMin: 0, xMax: 400, yMin: 180, yMax: 250 };
+        let iceDealerInArea = false;
+        Eisdealer.allObjects.forEach(item => {
+            if (item instanceof Eisdealer.Eisdealer) {
+                if (item.x >= chooseScoopArea.xMin && item.x <= chooseScoopArea.xMax &&
+                    item.y >= chooseScoopArea.yMin && item.y <= chooseScoopArea.yMax) {
+                    iceDealerInArea = true;
+                }
+            }
+        });
+        if (iceDealerInArea) {
+            if (chosenScoops.length < maxScoops) {
+                for (const item of Eisdealer.allObjects) {
+                    if (item instanceof Eisdealer.Scoop) {
+                        const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
+                        if (distance <= scoopRadius) {
+                            let chosenScoop = new Eisdealer.ScoopChosen(scoopPositions[chosenScoops.length].x, scoopPositions[chosenScoops.length].y, item.color);
+                            chosenScoops.push(chosenScoop);
+                            Eisdealer.allObjects.push(chosenScoop);
+                            // Cup wird direkt nach dem ersten ScoopChosen gezeichnet
+                            if (chosenScoops.length === 1) {
+                                let cup = new Eisdealer.Cup(800, 400);
+                                Eisdealer.allObjects.push(cup);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        console.log(`Clicked at position: (${clickX}, ${clickY})`);
+    }
+    Eisdealer.handleClick = handleClick;
     function drawBackround() {
         //Hintergrund
         const tileSize = 50; // Größe der Kacheln
@@ -105,22 +173,9 @@ var Eisdealer;
                 Eisdealer.crc2.strokeStyle = '#FFFFFF';
                 Eisdealer.crc2.stroke();
             }
+            Eisdealer.crc2.fillStyle = '#ffffff';
+            Eisdealer.crc2.fillRect(700, 0, 300, 600);
         });
     }
-    function handleClick(event) {
-        let canvasRect = event.target.getBoundingClientRect();
-        let clickX = event.clientX - canvasRect.left;
-        let clickY = event.clientY - canvasRect.top;
-        // Setze die Zielposition für Eisdealer
-        targetPosition = new Eisdealer.Vector(clickX, clickY);
-        // Übergib die Zielposition an den Eisdealer
-        Eisdealer.allObjects.forEach(item => {
-            if (item instanceof Eisdealer.Eisdealer) {
-                item.setTarget(targetPosition);
-            }
-        });
-        console.log(`Clicked at position: (${clickX}, ${clickY})`);
-    }
-    Eisdealer.handleClick = handleClick;
 })(Eisdealer || (Eisdealer = {}));
 //# sourceMappingURL=main.js.map
