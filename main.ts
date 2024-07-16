@@ -12,7 +12,9 @@ namespace Eisdealer {
     let colorPistacchio: string = "#87b07b";
     let colorStrawberry: string = "#eb3477";
     let colorLemon: string = "#f7dd31";
-
+    let earningsDisplay: HTMLElement | null;
+     
+    
     function handleLoad(_event: Event): void {
         console.log("handleLoad")
         // Zugriff auf das Canvas-Element
@@ -20,6 +22,8 @@ namespace Eisdealer {
         if (!canvas)
             return;
         crc2 = <CanvasRenderingContext2D>canvas.getContext("2d");
+
+        earningsDisplay = document.getElementById('earnings');
 
         canvas.addEventListener("click", handleClick);
 
@@ -49,29 +53,43 @@ namespace Eisdealer {
 
     }
 
-    // Funktion, um Kunden zu erstellen
-function createCustomer(): void {
-    let maxCustomers = 3;
+    let earningsTotal = 0
 
-    // Rekursive Funktion zur Erstellung von Kunden
-    function createCustomersIfNeeded(): void {
-       
-        let customerCount = allObjects.filter(obj => obj instanceof Customer).length;
-
-        // Wenn weniger als maxCustomers Kunden vorhanden sind, erstelle einen neuen Kunden
-        if (customerCount < maxCustomers) {
-            let customerX = 500; 
-            let customerY = 600; 
-            let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
-            allObjects.push(customer); // Kunden zu allObjects hinzufügen
-        }
-
-        if (customerCount < maxCustomers) {
-            setTimeout(createCustomersIfNeeded, 3000); // Wartezeit vor dem nächsten Kunden
-        }
+    function updateEarnings(amount: number): void {
+        console.log("update earnings");
+    earningsTotal += amount;
+    if (earningsDisplay) {
+        earningsDisplay.innerHTML = `Einnahmen: ${earningsTotal} €`;
+        console.log(`Einnahmen aktualisiert: ${earningsTotal} €`);
+    } else {
+        console.error("earningsDisplay is null or undefined.");
     }
-    createCustomersIfNeeded();
-}
+    }
+
+
+    // Funktion, um Kunden zu erstellen
+    function createCustomer(): void {
+        let maxCustomers = 3;
+
+        // Rekursive Funktion zur Erstellung von Kunden
+        function createCustomersIfNeeded(): void {
+        
+            let customerCount = allObjects.filter(obj => obj instanceof Customer).length;
+
+            // Wenn weniger als maxCustomers Kunden vorhanden sind, erstelle einen neuen Kunden
+            if (customerCount < maxCustomers) {
+                let customerX = 500; 
+                let customerY = 600; 
+                let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
+                allObjects.push(customer); // Kunden zu allObjects hinzufügen
+            }
+
+            if (customerCount < maxCustomers) {
+                setTimeout(createCustomersIfNeeded, 3000); // Wartezeit vor dem nächsten Kunden
+            }
+        }
+        createCustomersIfNeeded();
+    }
 
     
 
@@ -153,7 +171,13 @@ function createCustomer(): void {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
                 if (distance <= 50) { 
                     checkOrder(item as Customer); 
-                    deleteScoopChosen();
+                }
+                if (item.customerPay && distance <= 50) {
+                    console.log("geld einsammeln");
+                    const amount = item.getReceipt(); 
+                    updateEarnings(amount); 
+                    item.drawCustomer();
+                    item.customerPay = false;
                 }
             }
         });
@@ -225,21 +249,23 @@ function createCustomer(): void {
     }
 
     function checkOrder(customer: Customer): void {
-        let correct = true; // Variable, um den Status der Bestellung zu verfolgen
     
         for (let i = 0; i < chosenScoops.length; i++) {
             const chosenScoop = chosenScoops[i];
             const customerOrder = customer.order[i];
     
-            if (chosenScoop.flavor !== customerOrder.flavor) {
+            if (chosenScoop.flavor !== customerOrder.flavor) { //Eisbecher nicht korrekt
                 console.log(`Order for ${customer.type} is not correct!`);
-                break; // Breche die Schleife ab, da die Bestellung nicht korrekt ist
+                break; 
             }
 
-            if (correct) {
+            else { //Eisbecher ist korrekt
                 console.log(`Order for ${customer.type} is correct!`);
                 customer.orderCompleted = true;
+                customer.getReceipt();
+                deleteScoopChosen();
                 //createCustomer();
+                break; 
             }
         }
     }

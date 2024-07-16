@@ -7,6 +7,7 @@ namespace Eisdealer {
         private allObjects: Drawables[];
         public order: IceCream[];
         public orderCompleted: boolean = false;
+        public customerPay: boolean = false;
 
         constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string, allObjects: Drawables[]) {
             super (_x, _y, _direction, _speed, _type)
@@ -44,10 +45,10 @@ namespace Eisdealer {
                 }
             }
         
-            if (this.orderCompleted) {
-                this.speed = new Vector(1, 1); // Beispiel für Änderungen in der Geschwindigkeit
-                this.leave();
-            }
+            // if (this.orderCompleted) {
+            //     this.speed = new Vector(1, 1); // Beispiel für Änderungen in der Geschwindigkeit
+            //     this.leave();
+            // }
         }
         
 
@@ -78,6 +79,20 @@ namespace Eisdealer {
             this.drawOrder();
         }
 
+        public getReceipt(): number {
+            let amount = 0;
+
+            // Durchlaufe alle Kugeln in der Bestellung und addiere ihre Preise zum Gesamtpreis
+            for (let scoop of this.order) {
+                amount += scoop.price;
+                break;
+            }
+
+            console.log(`Receipt for ${this.type}: Total Price = ${amount} credits`);
+            return amount;
+    
+        }
+
         public leave(): void {
             this.speed = new Vector(4, 4); // Geschwindigkeit auf 4 setzen
 
@@ -92,7 +107,7 @@ namespace Eisdealer {
 
             // Wenn der Kunde die Zielkoordinaten erreicht hat, aus allObjects entfernen
             if (this.y > 609) {
-                console.log(`${this.type} left the shop.`);
+                //console.log(`${this.type} left the shop.`);
                 this.allObjects = this.allObjects.filter(obj => obj !== this);
             }
         }
@@ -160,8 +175,7 @@ namespace Eisdealer {
             crc2.stroke();
         }
 
-        draw(): void {
-            if (this.allObjects.includes(this)) {
+        public drawCustomer(){
             const x = this.x;
             const y = this.y;
             const radius = this.radius;
@@ -210,6 +224,49 @@ namespace Eisdealer {
             crc2.arc(x, y + 10, 15, 0, Math.PI, false); 
             crc2.strokeStyle = '#000000';
             crc2.stroke();
+        }
+
+        public drawReceiptDelayed(): void {
+            setTimeout(() => {
+                this.drawReceipt();
+            }, 5000); 
+        }
+        public drawReceipt(): void {   
+            this.customerPay = true;   
+            // Senkrechtes Rechteck zeichnen
+            crc2.beginPath();
+            crc2.rect(this.x + 30, this.y - 30, 20, 25);
+            crc2.fillStyle = "#ffffff"; // Weiß ausfüllen
+            crc2.strokeStyle = "#808080"; // Graue Umrandung
+            crc2.lineWidth = 2;
+            crc2.fill();
+            crc2.stroke();
+            crc2.closePath();
+        
+            // Ausrufezeichen zeichnen
+            crc2.beginPath();
+            crc2.moveTo(this.x + 40, this.y - 35);
+            crc2.lineTo(this.x + 40, this.y - 45); // Senkrechter Strich
+            crc2.strokeStyle = "#ff0000"; // Rote Farbe
+            crc2.lineWidth = 3;
+            crc2.stroke();
+            crc2.closePath();
+        
+            crc2.beginPath();
+            crc2.arc(this.x + 40, this.y - 30, 2, 0, Math.PI * 2); // Punkt darunter
+            crc2.fillStyle = "#ff0000"; // Rote Farbe
+            crc2.fill();
+            crc2.closePath();
+        }
+
+        draw(): void {
+            if (this.allObjects.includes(this)) {
+                this.drawCustomer();
+
+            if(this.orderCompleted){
+                this.drawCustomer();
+                this.drawReceiptDelayed();
+            }
         }
         }
         

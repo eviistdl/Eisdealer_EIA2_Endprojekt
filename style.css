@@ -5,3 +5,11 @@ body {
 canvas {
     border: 5px solid rgb(79, 121, 45); /* Optional: adds a white border around the canvas */
 }
+
+#earnings {
+    position: absolute; 
+    top: 30px; 
+    left: 760px; 
+    font-size: 18px;
+    color: black;
+}

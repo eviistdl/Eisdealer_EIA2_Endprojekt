@@ -10,6 +10,7 @@ var Eisdealer;
     let colorPistacchio = "#87b07b";
     let colorStrawberry = "#eb3477";
     let colorLemon = "#f7dd31";
+    let earningsDisplay;
     function handleLoad(_event) {
         console.log("handleLoad");
         // Zugriff auf das Canvas-Element
@@ -17,6 +18,7 @@ var Eisdealer;
         if (!canvas)
             return;
         Eisdealer.crc2 = canvas.getContext("2d");
+        earningsDisplay = document.getElementById('earnings');
         canvas.addEventListener("click", handleClick);
         let trash = new Eisdealer.Trash(470, 170);
         Eisdealer.allObjects.push(trash);
@@ -37,6 +39,18 @@ var Eisdealer;
         Eisdealer.allObjects.push(eisdealer);
         setInterval(animate, 20);
         createCustomer();
+    }
+    let earningsTotal = 0;
+    function updateEarnings(amount) {
+        console.log("update earnings");
+        earningsTotal += amount;
+        if (earningsDisplay) {
+            earningsDisplay.innerHTML = `Einnahmen: ${earningsTotal} €`;
+            console.log(`Einnahmen aktualisiert: ${earningsTotal} €`);
+        }
+        else {
+            console.error("earningsDisplay is null or undefined.");
+        }
     }
     // Funktion, um Kunden zu erstellen
     function createCustomer() {
@@ -123,7 +137,13 @@ var Eisdealer;
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
                 if (distance <= 50) {
                     checkOrder(item);
-                    deleteScoopChosen();
+                }
+                if (item.customerPay && distance <= 50) {
+                    console.log("geld einsammeln");
+                    const amount = item.getReceipt();
+                    updateEarnings(amount);
+                    item.drawCustomer();
+                    item.customerPay = false;
                 }
             }
         });
@@ -189,18 +209,20 @@ var Eisdealer;
     }
     Eisdealer.handleClick = handleClick;
     function checkOrder(customer) {
-        let correct = true; // Variable, um den Status der Bestellung zu verfolgen
         for (let i = 0; i < chosenScoops.length; i++) {
             const chosenScoop = chosenScoops[i];
             const customerOrder = customer.order[i];
-            if (chosenScoop.flavor !== customerOrder.flavor) {
+            if (chosenScoop.flavor !== customerOrder.flavor) { //Eisbecher nicht korrekt
                 console.log(`Order for ${customer.type} is not correct!`);
-                break; // Breche die Schleife ab, da die Bestellung nicht korrekt ist
+                break;
             }
-            if (correct) {
+            else { //Eisbecher ist korrekt
                 console.log(`Order for ${customer.type} is correct!`);
                 customer.orderCompleted = true;
+                customer.getReceipt();
+                deleteScoopChosen();
                 //createCustomer();
+                break;
             }
         }
     }
