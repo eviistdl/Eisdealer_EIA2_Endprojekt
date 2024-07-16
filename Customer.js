@@ -76,8 +76,8 @@ var Eisdealer;
             this.y += (dy / distance) * moveDistance;
             // Wenn der Kunde die Zielkoordinaten erreicht hat, aus allObjects entfernen
             if (this.y > 609) {
-                this.allObjects = this.allObjects.filter(obj => obj !== this);
                 console.log(`${this.type} left the shop.`);
+                this.allObjects = this.allObjects.filter(obj => obj !== this);
             }
         }
         drawOrder() {

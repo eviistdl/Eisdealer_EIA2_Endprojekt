@@ -49,26 +49,30 @@ namespace Eisdealer {
 
     }
 
-    function createCustomer(): void {
-        let customerCount = 0;
-        let maxCustomers = 3;
-    
-        function createSingleCustomer(): void {
-            if (customerCount < maxCustomers) {
-                let customerX = 500;
-                let customerY = 600;
-                let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
-                allObjects.push(customer);
-                customerCount++;
-    
-                // Warte 3 Sekunden, bevor der nächste Kunde erstellt wird
-                setTimeout(createSingleCustomer, 3000);
-            }
+    // Funktion, um Kunden zu erstellen
+function createCustomer(): void {
+    let maxCustomers = 3;
+
+    // Rekursive Funktion zur Erstellung von Kunden
+    function createCustomersIfNeeded(): void {
+       
+        let customerCount = allObjects.filter(obj => obj instanceof Customer).length;
+
+        // Wenn weniger als maxCustomers Kunden vorhanden sind, erstelle einen neuen Kunden
+        if (customerCount < maxCustomers) {
+            let customerX = 500; 
+            let customerY = 600; 
+            let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
+            allObjects.push(customer); // Kunden zu allObjects hinzufügen
         }
-    
-        // Starte die Erstellung des ersten Kunden sofort
-        createSingleCustomer();
+
+        if (customerCount < maxCustomers) {
+            setTimeout(createCustomersIfNeeded, 3000); // Wartezeit vor dem nächsten Kunden
+        }
     }
+    createCustomersIfNeeded();
+}
+
     
 
     function animate(): void {
@@ -147,8 +151,8 @@ namespace Eisdealer {
         allObjects.forEach(item => {
             if (item instanceof Customer) {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
-                if (distance <= 50) { // Adjust distance as needed for clicking sensitivity
-                    checkOrder(item as Customer); // Cast item to Customer and call checkOrder
+                if (distance <= 50) { 
+                    checkOrder(item as Customer); 
                     deleteScoopChosen();
                 }
             }

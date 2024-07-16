@@ -38,22 +38,24 @@ var Eisdealer;
         setInterval(animate, 20);
         createCustomer();
     }
+    // Funktion, um Kunden zu erstellen
     function createCustomer() {
-        let customerCount = 0;
         let maxCustomers = 3;
-        function createSingleCustomer() {
+        // Rekursive Funktion zur Erstellung von Kunden
+        function createCustomersIfNeeded() {
+            let customerCount = Eisdealer.allObjects.filter(obj => obj instanceof Eisdealer.Customer).length;
+            // Wenn weniger als maxCustomers Kunden vorhanden sind, erstelle einen neuen Kunden
             if (customerCount < maxCustomers) {
                 let customerX = 500;
                 let customerY = 600;
                 let customer = new Eisdealer.Customer(customerX, customerY, new Eisdealer.Vector(0, 0), new Eisdealer.Vector(4, 4), `Customer ${customerCount + 1}`, Eisdealer.allObjects);
-                Eisdealer.allObjects.push(customer);
-                customerCount++;
-                // Warte 3 Sekunden, bevor der nächste Kunde erstellt wird
-                setTimeout(createSingleCustomer, 3000);
+                Eisdealer.allObjects.push(customer); // Kunden zu allObjects hinzufügen
+            }
+            if (customerCount < maxCustomers) {
+                setTimeout(createCustomersIfNeeded, 3000); // Wartezeit vor dem nächsten Kunden
             }
         }
-        // Starte die Erstellung des ersten Kunden sofort
-        createSingleCustomer();
+        createCustomersIfNeeded();
     }
     function animate() {
         drawBackround();
@@ -119,8 +121,8 @@ var Eisdealer;
         Eisdealer.allObjects.forEach(item => {
             if (item instanceof Eisdealer.Customer) {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
-                if (distance <= 50) { // Adjust distance as needed for clicking sensitivity
-                    checkOrder(item); // Cast item to Customer and call checkOrder
+                if (distance <= 50) {
+                    checkOrder(item);
                     deleteScoopChosen();
                 }
             }
