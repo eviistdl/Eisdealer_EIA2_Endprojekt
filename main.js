@@ -76,7 +76,6 @@ var Eisdealer;
             Eisdealer.allObjects.push(cup);
             cup.draw();
         }
-        //createCustomer();
     }
     // Definition der Hindernisse
     const noGoZone1 = { x: 0, y: 0, width: 440, height: 240 };
@@ -90,13 +89,16 @@ var Eisdealer;
         return false;
     }
     Eisdealer.collisionNoGoZone = collisionNoGoZone;
+    function deleteScoopChosen() {
+        chosenScoops = [];
+        Eisdealer.allObjects = Eisdealer.allObjects.filter(obj => !(obj instanceof Eisdealer.ScoopChosen));
+        console.log("Scoops gelöscht");
+    }
     function handleClick(event) {
         let canvasRect = event.target.getBoundingClientRect();
         let clickX = event.clientX - canvasRect.left;
         let clickY = event.clientY - canvasRect.top;
-        // Setze die Zielposition für Eisdealer
-        targetPosition = new Eisdealer.Vector(clickX, clickY);
-        // Übergib die Zielposition an den Eisdealer
+        targetPosition = new Eisdealer.Vector(clickX, clickY); // Setze die Zielposition für Eisdealer
         Eisdealer.allObjects.forEach(item => {
             if (item instanceof Eisdealer.Eisdealer) {
                 item.setTarget(targetPosition);
@@ -108,19 +110,18 @@ var Eisdealer;
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
                 if (distance <= 50) {
                     // Lösche alle ausgewählten Eiskugeln
-                    chosenScoops = [];
-                    Eisdealer.allObjects = Eisdealer.allObjects.filter(obj => !(obj instanceof Eisdealer.ScoopChosen));
-                    console.log("Scoops gelöscht");
+                    deleteScoopChosen();
                     return;
                 }
             }
         });
-        // Kunden anklicken und checkOrder aufrufen
+        // Kunden anklicken und checkOrder aufrufen, Array löschen
         Eisdealer.allObjects.forEach(item => {
             if (item instanceof Eisdealer.Customer) {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
-                if (distance <= 150) { // Adjust distance as needed for clicking sensitivity
+                if (distance <= 50) { // Adjust distance as needed for clicking sensitivity
                     checkOrder(item); // Cast item to Customer and call checkOrder
+                    deleteScoopChosen();
                 }
             }
         });
@@ -186,17 +187,20 @@ var Eisdealer;
     }
     Eisdealer.handleClick = handleClick;
     function checkOrder(customer) {
-        console.log("checkOrder aufgerufen");
-        // Vergleiche die gewählten Eissorten des Eisdealers (chosenScoops) mit der Bestellung des Kunden (customer.order)
+        let correct = true; // Variable, um den Status der Bestellung zu verfolgen
         for (let i = 0; i < chosenScoops.length; i++) {
             const chosenScoop = chosenScoops[i];
             const customerOrder = customer.order[i];
             if (chosenScoop.flavor !== customerOrder.flavor) {
-                console.log(`Order for ${customer.type} is incorrect!`);
-                return;
+                console.log(`Order for ${customer.type} is not correct!`);
+                break; // Breche die Schleife ab, da die Bestellung nicht korrekt ist
+            }
+            if (correct) {
+                console.log(`Order for ${customer.type} is correct!`);
+                customer.orderCompleted = true;
+                //createCustomer();
             }
         }
-        console.log(`Order for ${customer.type} is correct!`);
     }
     function drawBackround() {
         //Hintergrund

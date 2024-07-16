@@ -69,7 +69,7 @@ namespace Eisdealer {
         // Starte die Erstellung des ersten Kunden sofort
         createSingleCustomer();
     }
-
+    
 
     function animate(): void {
         drawBackround();
@@ -81,7 +81,7 @@ namespace Eisdealer {
             }
             if (drawable instanceof Customer) {
                 drawable.move();
-                drawable.drawOrder(); 
+                drawable.drawOrder();
             }
         });
 
@@ -95,8 +95,6 @@ namespace Eisdealer {
             allObjects.push(cup);
             cup.draw();
         }
-
-         //createCustomer();
     }
 
     // Definition der Hindernisse
@@ -115,42 +113,43 @@ namespace Eisdealer {
         return false;
     }
         
-
+    function deleteScoopChosen(){
+        chosenScoops = [];
+        allObjects = allObjects.filter(obj => !(obj instanceof ScoopChosen));
+        console.log("Scoops gelöscht");
+    }
     export function handleClick(event: MouseEvent): void {
         let canvasRect = (event.target as HTMLCanvasElement).getBoundingClientRect(); 
         let clickX = event.clientX - canvasRect.left;
         let clickY = event.clientY - canvasRect.top;
     
-        // Setze die Zielposition für Eisdealer
-        targetPosition = new Vector(clickX, clickY);
+        targetPosition = new Vector(clickX, clickY);// Setze die Zielposition für Eisdealer
     
-        // Übergib die Zielposition an den Eisdealer
-        allObjects.forEach(item => {
+        allObjects.forEach(item => {// Übergib die Zielposition an den Eisdealer
             if (item instanceof Eisdealer) {
                 item.setTarget(targetPosition);
             }
         });
-
+        
     // // Mülleimer
         allObjects.forEach((item) => {
             if (item instanceof Trash) {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
                 if (distance <= 50) {
                     // Lösche alle ausgewählten Eiskugeln
-                    chosenScoops = [];
-                    allObjects = allObjects.filter(obj => !(obj instanceof ScoopChosen));
-                    console.log("Scoops gelöscht");
+                    deleteScoopChosen();
                     return;
                 }
             }
         });
 
-    // Kunden anklicken und checkOrder aufrufen
+    // Kunden anklicken und checkOrder aufrufen, Array löschen
         allObjects.forEach(item => {
             if (item instanceof Customer) {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
-                if (distance <= 150) { // Adjust distance as needed for clicking sensitivity
+                if (distance <= 50) { // Adjust distance as needed for clicking sensitivity
                     checkOrder(item as Customer); // Cast item to Customer and call checkOrder
+                    deleteScoopChosen();
                 }
             }
         });
@@ -222,21 +221,24 @@ namespace Eisdealer {
     }
 
     function checkOrder(customer: Customer): void {
-        console.log("checkOrder aufgerufen")
-        // Vergleiche die gewählten Eissorten des Eisdealers (chosenScoops) mit der Bestellung des Kunden (customer.order)
+        let correct = true; // Variable, um den Status der Bestellung zu verfolgen
+    
         for (let i = 0; i < chosenScoops.length; i++) {
             const chosenScoop = chosenScoops[i];
             const customerOrder = customer.order[i];
-
+    
             if (chosenScoop.flavor !== customerOrder.flavor) {
-                console.log(`Order for ${customer.type} is incorrect!`);
-                return;
+                console.log(`Order for ${customer.type} is not correct!`);
+                break; // Breche die Schleife ab, da die Bestellung nicht korrekt ist
+            }
+
+            if (correct) {
+                console.log(`Order for ${customer.type} is correct!`);
+                customer.orderCompleted = true;
+                //createCustomer();
             }
         }
-
-        console.log(`Order for ${customer.type} is correct!`);
     }
-
 
     function drawBackround(): void {
         //Hintergrund

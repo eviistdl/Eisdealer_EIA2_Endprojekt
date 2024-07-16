@@ -6,6 +6,7 @@ namespace Eisdealer {
         private targetChair: Chair | null;
         private allObjects: Drawables[];
         public order: IceCream[];
+        public orderCompleted: boolean = false;
 
         constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string, allObjects: Drawables[]) {
             super (_x, _y, _direction, _speed, _type)
@@ -15,23 +16,24 @@ namespace Eisdealer {
             this.targetChair = null;
             this.allObjects = allObjects;
             this.order = [];
+            this.orderCompleted = false;
         }
 
+        
         public move(): void {
-            //console.log("customer move");
             if (!this.targetChair || this.targetChair.isOccupied()) {
                 this.findNextUnoccupiedChair();
             }
-
+        
             if (this.targetChair) {
                 const dx = this.targetChair.x - this.x + 50;
                 const dy = this.targetChair.y - this.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 const moveDistance = Math.min(this.speed.x, distance);
-
+        
                 this.x += (dx / distance) * moveDistance;
                 this.y += (dy / distance) * moveDistance;
-
+        
                 if (distance < this.speed.x) {
                     this.targetChair.occupy();
                     this.speed = new Vector(0, 0);
@@ -41,7 +43,13 @@ namespace Eisdealer {
                     this.placeOrder();
                 }
             }
+        
+            if (this.orderCompleted) {
+                this.speed = new Vector(1, 1); // Beispiel für Änderungen in der Geschwindigkeit
+                this.leave();
+            }
         }
+        
 
         private findNextUnoccupiedChair(): void {
             for (const obj of this.allObjects) {
@@ -70,48 +78,66 @@ namespace Eisdealer {
             this.drawOrder();
         }
 
-        public receiveIceCream(): void {
-            console.log("Kunde hat das Eis erhalten.");
+        public leave(): void {
+            this.speed = new Vector(4, 4); // Geschwindigkeit auf 4 setzen
+
+            // Bewegungsberechnung zum Ziel (500, 700)
+            const dx = 500 - this.x;
+            const dy = 610 - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const moveDistance = Math.min(distance, Math.sqrt(this.speed.x * this.speed.x + this.speed.y * this.speed.y));
+
+            this.x += (dx / distance) * moveDistance;
+            this.y += (dy / distance) * moveDistance;
+
+            // Wenn der Kunde die Zielkoordinaten erreicht hat, aus allObjects entfernen
+            if (this.y > 609) {
+                this.allObjects = this.allObjects.filter(obj => obj !== this);
+                console.log(`${this.type} left the shop.`);
+            }
         }
 
+
         public drawOrder(): void {
-            //console.log("draw order")
-            const startX = this.x + 50;
-            const startY = this.y;
-            const diameter = 25;
-            const yOffset = -15;
+            if (!this.orderCompleted) {
+                //console.log("draw order")
+                const startX = this.x + 50;
+                const startY = this.y;
+                const diameter = 25;
+                const yOffset = -15;
 
-            for (let i = 0; i < this.order.length; i++) {
-                const x = startX;
-                const y = startY + i * yOffset;
-                let color = '';
+                for (let i = 0; i < this.order.length; i++) {
+                    const x = startX;
+                    const y = startY + i * yOffset;
+                    let color = '';
 
-                // Farbe basierend auf der Eiscremesorte setzen
-                switch (this.order[i].flavor) {
-                    case 'pistacchio':
-                        color = '#87b07b';
-                        break;
-                    case 'strawberry':
-                        color = '#eb3477';
-                        break;
-                    case 'lemon':
-                        color = '#f7dd31';
-                        break;
-                    default:
-                        color = '#000000'; 
-                        break;
-                }
+                    // Farbe basierend auf der Eiscremesorte setzen
+                    switch (this.order[i].flavor) {
+                        case 'pistacchio':
+                            color = '#87b07b';
+                            break;
+                        case 'strawberry':
+                            color = '#eb3477';
+                            break;
+                        case 'lemon':
+                            color = '#f7dd31';
+                            break;
+                        default:
+                            color = '#000000'; 
+                            break;
+                    }
 
-                // Eiskugeln
-                crc2.beginPath();
-                crc2.arc(x, y, diameter, Math.PI, 0); 
-                crc2.fillStyle = color;
-                crc2.fill();
-                crc2.strokeStyle = "#fcedd7";
-                crc2.stroke();
+                    // Eiskugeln
+                    crc2.beginPath();
+                    crc2.arc(x, y, diameter, Math.PI, 0); 
+                    crc2.fillStyle = color;
+                    crc2.fill();
+                    crc2.strokeStyle = "#fcedd7";
+                    crc2.stroke();
 
-                this.drawCup ();
+                    this.drawCup ();
             }
+        }
         }
 
         private drawCup(){
@@ -135,6 +161,7 @@ namespace Eisdealer {
         }
 
         draw(): void {
+            if (this.allObjects.includes(this)) {
             const x = this.x;
             const y = this.y;
             const radius = this.radius;
@@ -183,6 +210,7 @@ namespace Eisdealer {
             crc2.arc(x, y + 10, 15, 0, Math.PI, false); 
             crc2.strokeStyle = '#000000';
             crc2.stroke();
+        }
         }
         
         update(): void {

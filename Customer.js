@@ -8,6 +8,7 @@ var Eisdealer;
         targetChair;
         allObjects;
         order;
+        orderCompleted = false;
         constructor(_x, _y, _direction, _speed, _type, allObjects) {
             super(_x, _y, _direction, _speed, _type);
             this.radius = 40;
@@ -16,9 +17,9 @@ var Eisdealer;
             this.targetChair = null;
             this.allObjects = allObjects;
             this.order = [];
+            this.orderCompleted = false;
         }
         move() {
-            //console.log("customer move");
             if (!this.targetChair || this.targetChair.isOccupied()) {
                 this.findNextUnoccupiedChair();
             }
@@ -36,6 +37,10 @@ var Eisdealer;
                     //Bestellung aufgeben:
                     this.placeOrder();
                 }
+            }
+            if (this.orderCompleted) {
+                this.speed = new Eisdealer.Vector(1, 1); // Beispiel für Änderungen in der Geschwindigkeit
+                this.leave();
             }
         }
         findNextUnoccupiedChair() {
@@ -60,42 +65,56 @@ var Eisdealer;
             //console.log(`Customer placed order: ${JSON.stringify(this.order)}`);
             this.drawOrder();
         }
-        receiveIceCream() {
-            console.log("Kunde hat das Eis erhalten.");
+        leave() {
+            this.speed = new Eisdealer.Vector(4, 4); // Geschwindigkeit auf 4 setzen
+            // Bewegungsberechnung zum Ziel (500, 700)
+            const dx = 500 - this.x;
+            const dy = 610 - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const moveDistance = Math.min(distance, Math.sqrt(this.speed.x * this.speed.x + this.speed.y * this.speed.y));
+            this.x += (dx / distance) * moveDistance;
+            this.y += (dy / distance) * moveDistance;
+            // Wenn der Kunde die Zielkoordinaten erreicht hat, aus allObjects entfernen
+            if (this.y > 609) {
+                this.allObjects = this.allObjects.filter(obj => obj !== this);
+                console.log(`${this.type} left the shop.`);
+            }
         }
         drawOrder() {
-            //console.log("draw order")
-            const startX = this.x + 50;
-            const startY = this.y;
-            const diameter = 25;
-            const yOffset = -15;
-            for (let i = 0; i < this.order.length; i++) {
-                const x = startX;
-                const y = startY + i * yOffset;
-                let color = '';
-                // Farbe basierend auf der Eiscremesorte setzen
-                switch (this.order[i].flavor) {
-                    case 'pistacchio':
-                        color = '#87b07b';
-                        break;
-                    case 'strawberry':
-                        color = '#eb3477';
-                        break;
-                    case 'lemon':
-                        color = '#f7dd31';
-                        break;
-                    default:
-                        color = '#000000';
-                        break;
+            if (!this.orderCompleted) {
+                //console.log("draw order")
+                const startX = this.x + 50;
+                const startY = this.y;
+                const diameter = 25;
+                const yOffset = -15;
+                for (let i = 0; i < this.order.length; i++) {
+                    const x = startX;
+                    const y = startY + i * yOffset;
+                    let color = '';
+                    // Farbe basierend auf der Eiscremesorte setzen
+                    switch (this.order[i].flavor) {
+                        case 'pistacchio':
+                            color = '#87b07b';
+                            break;
+                        case 'strawberry':
+                            color = '#eb3477';
+                            break;
+                        case 'lemon':
+                            color = '#f7dd31';
+                            break;
+                        default:
+                            color = '#000000';
+                            break;
+                    }
+                    // Eiskugeln
+                    Eisdealer.crc2.beginPath();
+                    Eisdealer.crc2.arc(x, y, diameter, Math.PI, 0);
+                    Eisdealer.crc2.fillStyle = color;
+                    Eisdealer.crc2.fill();
+                    Eisdealer.crc2.strokeStyle = "#fcedd7";
+                    Eisdealer.crc2.stroke();
+                    this.drawCup();
                 }
-                // Eiskugeln
-                Eisdealer.crc2.beginPath();
-                Eisdealer.crc2.arc(x, y, diameter, Math.PI, 0);
-                Eisdealer.crc2.fillStyle = color;
-                Eisdealer.crc2.fill();
-                Eisdealer.crc2.strokeStyle = "#fcedd7";
-                Eisdealer.crc2.stroke();
-                this.drawCup();
             }
         }
         drawCup() {
@@ -116,48 +135,50 @@ var Eisdealer;
             Eisdealer.crc2.stroke();
         }
         draw() {
-            const x = this.x;
-            const y = this.y;
-            const radius = this.radius;
-            const skin = this.skin;
-            const hairColor = this.hairColor;
-            // Haare 
-            Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(x, y, radius + 10, 0, Math.PI * 2); // Etwas größerer Kreis
-            Eisdealer.crc2.fillStyle = hairColor;
-            Eisdealer.crc2.fillRect(x - (radius + 10), y + radius - 40, 100, 50);
-            Eisdealer.crc2.fill();
-            // Ohren zeichnen
-            Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(x - radius, y, 10, 0, Math.PI);
-            Eisdealer.crc2.arc(x + radius, y, 10, 0, Math.PI);
-            Eisdealer.crc2.fillStyle = skin;
-            Eisdealer.crc2.strokeStyle = "#52402a";
-            Eisdealer.crc2.fill();
-            Eisdealer.crc2.stroke();
-            // Kopf 
-            Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(x, y, radius, 0, Math.PI * 2);
-            Eisdealer.crc2.fillStyle = skin;
-            Eisdealer.crc2.strokeStyle = "#52402a";
-            Eisdealer.crc2.fill();
-            Eisdealer.crc2.stroke();
-            // Pony (Viertelkreis oben auf dem Kopf)
-            Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(x, y - radius / 8, radius, Math.PI * 1.15, Math.PI * 1.85); // Pony etwas nach oben verschoben
-            Eisdealer.crc2.fillStyle = hairColor;
-            Eisdealer.crc2.fill();
-            // Augen zeichnen
-            Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(x - 15, y - 10, 5, 0, Math.PI * 2);
-            Eisdealer.crc2.arc(x + 15, y - 10, 5, 0, Math.PI * 2);
-            Eisdealer.crc2.fillStyle = '#000000';
-            Eisdealer.crc2.fill();
-            // Mund zeichnen
-            Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(x, y + 10, 15, 0, Math.PI, false);
-            Eisdealer.crc2.strokeStyle = '#000000';
-            Eisdealer.crc2.stroke();
+            if (this.allObjects.includes(this)) {
+                const x = this.x;
+                const y = this.y;
+                const radius = this.radius;
+                const skin = this.skin;
+                const hairColor = this.hairColor;
+                // Haare 
+                Eisdealer.crc2.beginPath();
+                Eisdealer.crc2.arc(x, y, radius + 10, 0, Math.PI * 2); // Etwas größerer Kreis
+                Eisdealer.crc2.fillStyle = hairColor;
+                Eisdealer.crc2.fillRect(x - (radius + 10), y + radius - 40, 100, 50);
+                Eisdealer.crc2.fill();
+                // Ohren zeichnen
+                Eisdealer.crc2.beginPath();
+                Eisdealer.crc2.arc(x - radius, y, 10, 0, Math.PI);
+                Eisdealer.crc2.arc(x + radius, y, 10, 0, Math.PI);
+                Eisdealer.crc2.fillStyle = skin;
+                Eisdealer.crc2.strokeStyle = "#52402a";
+                Eisdealer.crc2.fill();
+                Eisdealer.crc2.stroke();
+                // Kopf 
+                Eisdealer.crc2.beginPath();
+                Eisdealer.crc2.arc(x, y, radius, 0, Math.PI * 2);
+                Eisdealer.crc2.fillStyle = skin;
+                Eisdealer.crc2.strokeStyle = "#52402a";
+                Eisdealer.crc2.fill();
+                Eisdealer.crc2.stroke();
+                // Pony (Viertelkreis oben auf dem Kopf)
+                Eisdealer.crc2.beginPath();
+                Eisdealer.crc2.arc(x, y - radius / 8, radius, Math.PI * 1.15, Math.PI * 1.85); // Pony etwas nach oben verschoben
+                Eisdealer.crc2.fillStyle = hairColor;
+                Eisdealer.crc2.fill();
+                // Augen zeichnen
+                Eisdealer.crc2.beginPath();
+                Eisdealer.crc2.arc(x - 15, y - 10, 5, 0, Math.PI * 2);
+                Eisdealer.crc2.arc(x + 15, y - 10, 5, 0, Math.PI * 2);
+                Eisdealer.crc2.fillStyle = '#000000';
+                Eisdealer.crc2.fill();
+                // Mund zeichnen
+                Eisdealer.crc2.beginPath();
+                Eisdealer.crc2.arc(x, y + 10, 15, 0, Math.PI, false);
+                Eisdealer.crc2.strokeStyle = '#000000';
+                Eisdealer.crc2.stroke();
+            }
         }
         update() {
         }
