@@ -41,19 +41,44 @@ namespace Eisdealer {
         let eisdealer = new Eisdealer(300, 400, new Vector(0, 0), new Vector(5, 5), "Eisdealer");
         allObjects.push(eisdealer);
 
-        for (let i = 0; i < 3; i++) {
-            setTimeout(() => {
-                let customerX = 500 ; // Versatz für unterschiedliche Startpositionen
-                let customerY = 600;
-                let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${i + 1}`, allObjects);
-                allObjects.push(customer);
-    
-            }, i * 3000); 
-        }
-
         setInterval(animate, 20);
+        createCustomer();
 
     }
+
+    function createCustomer(): void {
+        let customerCount = 0;
+        let maxCustomers = 3;
+    
+        function createSingleCustomer(): void {
+            if (customerCount < maxCustomers) {
+                let customerX = 500;
+                let customerY = 600;
+                let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
+                allObjects.push(customer);
+                customerCount++;
+    
+                // Warte 3 Sekunden, bevor der nächste Kunde erstellt wird
+                setTimeout(createSingleCustomer, 3000);
+            }
+        }
+    
+        // Starte die Erstellung des ersten Kunden sofort
+        createSingleCustomer();
+    }
+
+    // function createCustomer(): void {
+    //     setInterval(() => {
+    //         let customerCount = allObjects.filter(item => item instanceof Customer).length;
+    //         if (customerCount < 3) { // Anzahl Customer festlegen
+    //             let customerX = 500;
+    //             let customerY = 600;
+    //             let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
+    //             allObjects.push(customer);
+    //         }
+    //     }, 3000); // Kunden alle 3 Sekunden erstellen
+    // }
+    
 
     function animate(): void {
         drawBackround();
@@ -75,9 +100,12 @@ namespace Eisdealer {
         // Zeichne den Cup, falls ScoopChosen vorhanden sind
         if (chosenScoops.length > 0) {
             let cup = new Cup(800, 400);
-            allObjects.push(cup); // Cup wird direkt nach dem ersten ScoopChosen gezeichnet
+            allObjects.push(cup);
             cup.draw();
         }
+
+         //createCustomer();
+ 
     }
 
     // Definition der Hindernisse
@@ -109,6 +137,20 @@ namespace Eisdealer {
         allObjects.forEach(item => {
             if (item instanceof Eisdealer) {
                 item.setTarget(targetPosition);
+            }
+        });
+
+        // // Mülleimer
+        allObjects.forEach((item) => {
+            if (item instanceof Trash) {
+                const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
+                if (distance <= 50) {
+                    // Lösche alle ausgewählten Eiskugeln
+                    chosenScoops = [];
+                    allObjects = allObjects.filter(obj => !(obj instanceof ScoopChosen));
+                    console.log("Scoops gelöscht");
+                    return;
+                }
             }
         });
     
@@ -158,7 +200,7 @@ namespace Eisdealer {
             }
         }
     
-        console.log(`Clicked at position: (${clickX}, ${clickY})`);
+        //console.log(`Clicked at position: (${clickX}, ${clickY})`);
     }
     
 
