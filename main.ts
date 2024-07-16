@@ -9,6 +9,9 @@ namespace Eisdealer {
     export let allObjects: Drawables[] = [];
     let targetPosition: Vector = new Vector(0, 0);
     let chosenScoops: ScoopChosen[] = [];
+    let colorPistacchio: string = "#87b07b";
+    let colorStrawberry: string = "#eb3477";
+    let colorLemon: string = "#f7dd31";
 
     function handleLoad(_event: Event): void {
         console.log("handleLoad")
@@ -30,11 +33,11 @@ namespace Eisdealer {
         const chair3: Chair = new Chair(530, 350);
         allObjects.push(chair3);
 
-        const pistacchio: Scoop = new Scoop(80, 100, "#87b07b")
+        let pistacchio: Scoop = new Scoop(80, 100, colorPistacchio)
         allObjects.push(pistacchio);
-        const strawberry: Scoop = new Scoop(200, 100, "#eb3477")
+        let strawberry: Scoop = new Scoop(200, 100, colorStrawberry)
         allObjects.push(strawberry);
-        const lemon: Scoop = new Scoop(320, 100, "#f7dd31")
+        let lemon: Scoop = new Scoop(320, 100, colorLemon)
         allObjects.push(lemon);
 
         // Eisdealer erstellen und hinzufügen
@@ -94,7 +97,6 @@ namespace Eisdealer {
         }
 
          //createCustomer();
- 
     }
 
     // Definition der Hindernisse
@@ -129,7 +131,7 @@ namespace Eisdealer {
             }
         });
 
-        // // Mülleimer
+    // // Mülleimer
         allObjects.forEach((item) => {
             if (item instanceof Trash) {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
@@ -139,6 +141,16 @@ namespace Eisdealer {
                     allObjects = allObjects.filter(obj => !(obj instanceof ScoopChosen));
                     console.log("Scoops gelöscht");
                     return;
+                }
+            }
+        });
+
+    // Kunden anklicken und checkOrder aufrufen
+        allObjects.forEach(item => {
+            if (item instanceof Customer) {
+                const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
+                if (distance <= 150) { // Adjust distance as needed for clicking sensitivity
+                    checkOrder(item as Customer); // Cast item to Customer and call checkOrder
                 }
             }
         });
@@ -157,26 +169,41 @@ namespace Eisdealer {
     
     // Prüfen, ob der Eisdealer sich im richtigen Bereich befindet
         const chooseScoopArea = { xMin: 0, xMax: 400, yMin: 180, yMax: 250 };
-        let iceDealerInArea = false;
-    
+        let EisdealerInArea = false;
+        
+        //überprüfen ob Eisdealer nah genug
         allObjects.forEach(item => {
             if (item instanceof Eisdealer) {
                 if (item.x >= chooseScoopArea.xMin && item.x <= chooseScoopArea.xMax &&
                     item.y >= chooseScoopArea.yMin && item.y <= chooseScoopArea.yMax) {
-                    iceDealerInArea = true;
+                    EisdealerInArea = true;
                 }
             }
         });
-    
-        if (iceDealerInArea) {
+        
+        //Ausgewählte Sorten rechts zeichnen
+        if (EisdealerInArea) {
             if (chosenScoops.length < maxScoops) {
                 for (const item of allObjects) {
                     if (item instanceof Scoop) {
                         const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
                         if (distance <= scoopRadius) {
-                            let chosenScoop = new ScoopChosen(scoopPositions[chosenScoops.length].x, scoopPositions[chosenScoops.length].y, item.color);
-                            chosenScoops.push(chosenScoop);
-                            allObjects.push(chosenScoop);
+                            let flavorChosenScoop: string;
+
+                        // Farbe des Scoops überprüfen und den entsprechenden Geschmack zuweisen
+                        if (item.color === colorPistacchio) { 
+                            flavorChosenScoop = 'pistacchio';
+                        } else if (item.color === colorStrawberry) { 
+                            flavorChosenScoop = 'strawberry';
+                        } else if (item.color === colorLemon) { 
+                            flavorChosenScoop = 'lemon';
+                        } else {
+                            flavorChosenScoop = 'unknown';
+                        }
+
+                        let chosenScoop = new ScoopChosen(scoopPositions[chosenScoops.length].x, scoopPositions[chosenScoops.length].y, item.color, flavorChosenScoop);
+                        chosenScoops.push(chosenScoop);
+                        allObjects.push(chosenScoop);
     
                             // Cup wird direkt nach dem ersten ScoopChosen gezeichnet
                             if (chosenScoops.length === 1) {
@@ -193,7 +220,23 @@ namespace Eisdealer {
     
         //console.log(`Clicked at position: (${clickX}, ${clickY})`);
     }
-    
+
+    function checkOrder(customer: Customer): void {
+        console.log("checkOrder aufgerufen")
+        // Vergleiche die gewählten Eissorten des Eisdealers (chosenScoops) mit der Bestellung des Kunden (customer.order)
+        for (let i = 0; i < chosenScoops.length; i++) {
+            const chosenScoop = chosenScoops[i];
+            const customerOrder = customer.order[i];
+
+            if (chosenScoop.flavor !== customerOrder.flavor) {
+                console.log(`Order for ${customer.type} is incorrect!`);
+                return;
+            }
+        }
+
+        console.log(`Order for ${customer.type} is correct!`);
+    }
+
 
     function drawBackround(): void {
         //Hintergrund

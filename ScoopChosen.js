@@ -4,10 +4,12 @@ var Eisdealer;
     class ScoopChosen extends Eisdealer.Drawables {
         radius;
         color;
-        constructor(_x, _y, _color) {
+        flavor;
+        constructor(_x, _y, _color, _flavor) {
             super(_x, _y);
             this.radius = 65;
             this.color = _color;
+            this.flavor = _flavor;
         }
         draw() {
             Eisdealer.crc2.beginPath();

@@ -5,7 +5,7 @@ namespace Eisdealer {
         private hairColor: string;
         private targetChair: Chair | null;
         private allObjects: Drawables[];
-        private order: IceCream[];
+        public order: IceCream[];
 
         constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string, allObjects: Drawables[]) {
             super (_x, _y, _direction, _speed, _type)
@@ -68,6 +68,10 @@ namespace Eisdealer {
 
             //console.log(`Customer placed order: ${JSON.stringify(this.order)}`);
             this.drawOrder();
+        }
+
+        public receiveIceCream(): void {
+            console.log("Kunde hat das Eis erhalten.");
         }
 
         public drawOrder(): void {

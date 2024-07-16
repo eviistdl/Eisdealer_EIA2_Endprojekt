@@ -3,11 +3,13 @@ namespace Eisdealer {
 
         private radius: number;
         public color: string;
+        public flavor: string
 
-        constructor(_x: number, _y: number, _color: string) {
+        constructor(_x: number, _y: number, _color: string, _flavor: string) {
             super(_x, _y);
             this.radius = 65;
             this.color = _color;
+            this.flavor = _flavor;
         }
 
         draw() {

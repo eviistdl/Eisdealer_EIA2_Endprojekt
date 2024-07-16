@@ -60,6 +60,9 @@ var Eisdealer;
             //console.log(`Customer placed order: ${JSON.stringify(this.order)}`);
             this.drawOrder();
         }
+        receiveIceCream() {
+            console.log("Kunde hat das Eis erhalten.");
+        }
         drawOrder() {
             //console.log("draw order")
             const startX = this.x + 50;
