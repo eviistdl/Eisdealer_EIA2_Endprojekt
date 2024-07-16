@@ -67,18 +67,6 @@ namespace Eisdealer {
         createSingleCustomer();
     }
 
-    // function createCustomer(): void {
-    //     setInterval(() => {
-    //         let customerCount = allObjects.filter(item => item instanceof Customer).length;
-    //         if (customerCount < 3) { // Anzahl Customer festlegen
-    //             let customerX = 500;
-    //             let customerY = 600;
-    //             let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
-    //             allObjects.push(customer);
-    //         }
-    //     }, 3000); // Kunden alle 3 Sekunden erstellen
-    // }
-    
 
     function animate(): void {
         drawBackround();
@@ -90,6 +78,7 @@ namespace Eisdealer {
             }
             if (drawable instanceof Customer) {
                 drawable.move();
+                drawable.drawOrder(); 
             }
         });
 
@@ -154,17 +143,19 @@ namespace Eisdealer {
             }
         });
     
-        // Prüfen ob ein Scoop angeklickt wurde und ob noch Platz für weitere Scoops ist
+    //Scoops
         const scoopRadius = 50;
-        const maxScoops = 4; 
+        const maxScoops = 6; 
         const scoopPositions = [
             { x: 875, y: 450 },
             { x: 875, y: 420 },
             { x: 875, y: 390 },
-            { x: 875, y: 360 }
+            { x: 875, y: 360 },
+            { x: 875, y: 330 },
+            { x: 875, y: 300 },
         ];
     
-        // Prüfen, ob der Eisdealer sich im richtigen Bereich befindet
+    // Prüfen, ob der Eisdealer sich im richtigen Bereich befindet
         const chooseScoopArea = { xMin: 0, xMax: 400, yMin: 180, yMax: 250 };
         let iceDealerInArea = false;
     

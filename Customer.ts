@@ -5,6 +5,7 @@ namespace Eisdealer {
         private hairColor: string;
         private targetChair: Chair | null;
         private allObjects: Drawables[];
+        private order: IceCream[];
 
         constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string, allObjects: Drawables[]) {
             super (_x, _y, _direction, _speed, _type)
@@ -13,6 +14,7 @@ namespace Eisdealer {
             this.hairColor = "#52402a";
             this.targetChair = null;
             this.allObjects = allObjects;
+            this.order = [];
         }
 
         public move(): void {
@@ -34,6 +36,9 @@ namespace Eisdealer {
                     this.targetChair.occupy();
                     this.speed = new Vector(0, 0);
                     this.targetChair = null;
+
+                    //Bestellung aufgeben:
+                    this.placeOrder();
                 }
             }
         }
@@ -45,6 +50,84 @@ namespace Eisdealer {
                     break;
                 }
             }
+        }
+
+        private placeOrder(): void {
+            // Zufällige Anzahl von Kugeln zwischen 3 und 6 auswählen
+            const numScoops = Math.floor(Math.random() * 4) + 3; // 3 bis 6 Kugeln
+
+            // Array von verfügbaren Eissorten aus data.ts
+            const availableFlavors = data;
+
+            // Zufällige Auswahl von Eissorten für die Bestellung
+            for (let i = 0; i < numScoops; i++) {
+                const randomIndex = Math.floor(Math.random() * availableFlavors.length);
+                const randomFlavor = availableFlavors[randomIndex];
+                this.order.push(randomFlavor);
+            }
+
+            //console.log(`Customer placed order: ${JSON.stringify(this.order)}`);
+            this.drawOrder();
+        }
+
+        public drawOrder(): void {
+            //console.log("draw order")
+            const startX = this.x + 50;
+            const startY = this.y;
+            const diameter = 25;
+            const yOffset = -15;
+
+            for (let i = 0; i < this.order.length; i++) {
+                const x = startX;
+                const y = startY + i * yOffset;
+                let color = '';
+
+                // Farbe basierend auf der Eiscremesorte setzen
+                switch (this.order[i].flavor) {
+                    case 'pistacchio':
+                        color = '#87b07b';
+                        break;
+                    case 'strawberry':
+                        color = '#eb3477';
+                        break;
+                    case 'lemon':
+                        color = '#f7dd31';
+                        break;
+                    default:
+                        color = '#000000'; 
+                        break;
+                }
+
+                // Eiskugeln
+                crc2.beginPath();
+                crc2.arc(x, y, diameter, Math.PI, 0); 
+                crc2.fillStyle = color;
+                crc2.fill();
+                crc2.strokeStyle = "#fcedd7";
+                crc2.stroke();
+
+                this.drawCup ();
+            }
+        }
+
+        private drawCup(){
+            const x = this.x + 20;
+            const y = this.y;
+            const widthTop = 60;
+            const widthBottom = 45;
+            const height = 30;
+
+            crc2.beginPath();
+            crc2.moveTo(x, y); // Starting point (top-left)
+            crc2.lineTo(x + widthTop, y); // Top side
+            crc2.lineTo(x + (widthTop - widthBottom) / 2 + widthBottom, y + height); // Bottom-right side
+            crc2.lineTo(x + (widthTop - widthBottom) / 2, y + height); // Bottom-left side
+            crc2.closePath(); // Close the path
+
+            crc2.fillStyle = "#ebddb9";
+            crc2.fill();
+            crc2.strokeStyle = "#b39b78";
+            crc2.stroke();
         }
 
         draw(): void {
