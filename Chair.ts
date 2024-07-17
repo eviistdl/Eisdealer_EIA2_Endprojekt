@@ -24,7 +24,7 @@ namespace Eisdealer {
 
         public free(): void {
             this.occupied = false;
-            console.log("der chair ist free");
+            //console.log("der chair ist free");
         }
 
         draw(): void {

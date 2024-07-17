@@ -21,7 +21,7 @@ var Eisdealer;
         }
         free() {
             this.occupied = false;
-            console.log("der chair ist free");
+            //console.log("der chair ist free");
         }
         draw() {
             //console.log("draw Chair")

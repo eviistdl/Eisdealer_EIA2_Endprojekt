@@ -164,11 +164,23 @@ namespace Eisdealer {
             if (item instanceof Customer) {
                 customerClicked = true;
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
-                if (customerClicked && distance <= 50) { 
+
+                // Überprüfen ob Eisdealer nah genug am Kunden ist
+                let EisdealerInArea = false;
+                allObjects.forEach(dealer => {
+                    if (dealer instanceof Eisdealer) {
+                        const distanceEisdealer = Math.sqrt(Math.pow(dealer.x - item.x, 2) + Math.pow(dealer.y - item.y, 2));
+                        if (distanceEisdealer <= 100) {
+                            EisdealerInArea = true;
+                        }
+                    }
+                });
+
+                if (customerClicked && distance <= 50 && EisdealerInArea) { 
                     checkOrder(item as Customer); //Zugriff auf den bestimmten Customer
                     // customerClicked = false;
                 }
-                if (customerClicked && distance <= 50 && item.customerPay) {
+                if (customerClicked && distance <= 50 && item.customerPay && EisdealerInArea) {
                     console.log("geld einsammeln");
                     const amount = item.getReceipt();
 
