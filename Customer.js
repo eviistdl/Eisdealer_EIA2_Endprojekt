@@ -7,6 +7,7 @@ var Eisdealer;
         skin;
         hairColor;
         targetChair;
+        assignedChair;
         allObjects;
         order;
         orderCompleted = false;
@@ -18,6 +19,7 @@ var Eisdealer;
             this.skin = "#e8d3b7";
             this.hairColor = "#52402a";
             this.targetChair = null;
+            this.assignedChair = null;
             this.allObjects = allObjects;
             this.order = [];
             this.orderCompleted = false;
@@ -39,6 +41,7 @@ var Eisdealer;
                             this.targetChair.occupy();
                             this.speed = new Eisdealer.Vector(0, 0);
                             this.targetChair = null;
+                            this.assignedChair = this.targetChair;
                             // Bestellung aufgeben:
                             this.placeOrder();
                             this.state = "sit";
@@ -57,7 +60,6 @@ var Eisdealer;
                     this.y += (dy / distance) * moveDistance;
                     if (this.y > 699) {
                         this.allObjects = this.allObjects.filter(obj => obj !== this);
-                        this.speed = new Eisdealer.Vector(2, 2);
                         this.createSingleCustomer();
                     }
                     break;

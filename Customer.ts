@@ -3,8 +3,11 @@ namespace Eisdealer {    export class Customer extends Moveables {
     private radius: number;
     private skin: string;
     private hairColor: string;
+
     private targetChair: Chair | null;
+    public assignedChair: Chair | null;
     private allObjects: Drawables[];
+
     public order: IceCream[];
     public orderCompleted: boolean = false;
     public customerPay: boolean = false;
@@ -15,8 +18,11 @@ namespace Eisdealer {    export class Customer extends Moveables {
         this.radius = 40;
         this.skin = "#e8d3b7";
         this.hairColor = "#52402a";
+
         this.targetChair = null;
+        this.assignedChair = null; 
         this.allObjects = allObjects;
+
         this.order = [];
         this.orderCompleted = false;
     }
@@ -41,6 +47,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
                         this.targetChair.occupy();
                         this.speed = new Vector(0, 0);
                         this.targetChair = null;
+                        this.assignedChair = this.targetChair;
     
                         // Bestellung aufgeben:
                         this.placeOrder();
@@ -60,12 +67,9 @@ namespace Eisdealer {    export class Customer extends Moveables {
     
                 this.x += (dx / distance) * moveDistance;
                 this.y += (dy / distance) * moveDistance;
-
-                
     
                 if (this.y > 699) {
                     this.allObjects = this.allObjects.filter(obj => obj !== this);
-                    this.speed = new Vector (2,2);
                     this.createSingleCustomer();
                 }
                 break;

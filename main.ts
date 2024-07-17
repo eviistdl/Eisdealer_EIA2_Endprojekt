@@ -40,10 +40,9 @@ namespace Eisdealer {
         // Eisdealer erstellen und hinzufügen
         let eisdealer = new Eisdealer(300, 400, new Vector(0, 0), new Vector(5, 5), "Eisdealer");
         allObjects.push(eisdealer);
-
-        setInterval(animate, 20);
         mainLoop();
-        // createCustomer();
+        setInterval(animate, 20);
+        
 
     }
 
@@ -77,11 +76,7 @@ namespace Eisdealer {
                 customer.createCustomers();
             }
         }, 500); // Intervallzeit in Millisekunden (500ms = 0,5s)
-        allObjects.forEach(item => {
-            if (item instanceof Customer) {
-                item.move();
-            }
-        });
+       
     }
 
     // Starte die Hauptschleife

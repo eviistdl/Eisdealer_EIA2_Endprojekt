@@ -30,9 +30,8 @@ var Eisdealer;
         // Eisdealer erstellen und hinzufügen
         let eisdealer = new Eisdealer.Eisdealer(300, 400, new Eisdealer.Vector(0, 0), new Eisdealer.Vector(5, 5), "Eisdealer");
         Eisdealer.allObjects.push(eisdealer);
-        setInterval(animate, 20);
         mainLoop();
-        // createCustomer();
+        setInterval(animate, 20);
     }
     // Funktion zum Generieren von Scoops basierend auf den Daten
     function generateScoops(_data) {
@@ -60,11 +59,6 @@ var Eisdealer;
                 customer.createCustomers();
             }
         }, 500); // Intervallzeit in Millisekunden (500ms = 0,5s)
-        Eisdealer.allObjects.forEach(item => {
-            if (item instanceof Eisdealer.Customer) {
-                item.move();
-            }
-        });
     }
     // Starte die Hauptschleife
     mainLoop();
