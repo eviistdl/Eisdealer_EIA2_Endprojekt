@@ -19,7 +19,7 @@ var Eisdealer;
         occupy() {
             this.occupied = true;
         }
-        publicfree() {
+        free() {
             this.occupied = false;
             console.log("der chair ist free");
         }

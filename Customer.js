@@ -3,6 +3,7 @@ var Eisdealer;
 (function (Eisdealer) {
     class Customer extends Eisdealer.Moveables {
         state;
+        emotion;
         radius;
         skin;
         hairColor;
@@ -13,6 +14,7 @@ var Eisdealer;
         orderCompleted = false;
         customerPay = false;
         paid = false;
+        orderCorrect = false;
         constructor(_x, _y, _direction, _speed, _type, allObjects) {
             super(_x, _y, _direction, _speed, _type);
             this.radius = 40;
@@ -40,8 +42,8 @@ var Eisdealer;
                         if (distance < this.speed.x) {
                             this.targetChair.occupy();
                             this.speed = new Eisdealer.Vector(0, 0);
-                            this.targetChair = null;
                             this.assignedChair = this.targetChair;
+                            this.targetChair = null;
                             // Bestellung aufgeben:
                             this.placeOrder();
                             this.state = "sit";
@@ -59,6 +61,9 @@ var Eisdealer;
                     this.x += (dx / distance) * moveDistance;
                     this.y += (dy / distance) * moveDistance;
                     if (this.y > 699) {
+                        if (this.assignedChair) {
+                            this.assignedChair.free();
+                        }
                         this.allObjects = this.allObjects.filter(obj => obj !== this);
                         this.createSingleCustomer();
                     }
@@ -66,6 +71,7 @@ var Eisdealer;
             }
         }
         findNextUnoccupiedChair() {
+            console.log("find next unoccupied chair");
             for (const obj of this.allObjects) {
                 if (obj instanceof Eisdealer.Chair && !obj.isOccupied()) {
                     this.targetChair = obj;
@@ -83,6 +89,7 @@ var Eisdealer;
             let customer = new Customer(customerX, customerY, new Eisdealer.Vector(0, 0), new Eisdealer.Vector(4, 4), `Customer ${Eisdealer.customerCount + 1}`, Eisdealer.allObjects);
             Eisdealer.allObjects.push(customer); // Kunden zu allObjects hinzufügen
             customer.state = "walk in";
+            customer.emotion = "happy";
             Eisdealer.customerCount++; // Erhöhe die Kundenanzahl
         }
         placeOrder() {
@@ -163,13 +170,13 @@ var Eisdealer;
             Eisdealer.crc2.strokeStyle = "#b39b78";
             Eisdealer.crc2.stroke();
         }
-        drawCustomer() {
+        drawCustomerHappy() {
             const x = this.x;
             const y = this.y;
             const radius = this.radius;
             const skin = this.skin;
             const hairColor = this.hairColor;
-            // Haare 
+            // Haare
             Eisdealer.crc2.beginPath();
             Eisdealer.crc2.arc(x, y, radius + 10, 0, Math.PI * 2); // Etwas größerer Kreis
             Eisdealer.crc2.fillStyle = hairColor;
@@ -183,7 +190,7 @@ var Eisdealer;
             Eisdealer.crc2.strokeStyle = "#52402a";
             Eisdealer.crc2.fill();
             Eisdealer.crc2.stroke();
-            // Kopf 
+            // Kopf
             Eisdealer.crc2.beginPath();
             Eisdealer.crc2.arc(x, y, radius, 0, Math.PI * 2);
             Eisdealer.crc2.fillStyle = skin;
@@ -204,12 +211,71 @@ var Eisdealer;
             // Mund zeichnen
             Eisdealer.crc2.beginPath();
             Eisdealer.crc2.arc(x, y + 10, 15, 0, Math.PI, false);
-            Eisdealer.crc2.strokeStyle = '#000000';
+            Eisdealer.crc2.strokeStyle = '#000000'; // Schwarzer Mund, wenn der Kunde glücklich ist
             Eisdealer.crc2.stroke();
+        }
+        drawCustomerAngry() {
+            const x = this.x;
+            const y = this.y;
+            const radius = this.radius;
+            const skin = this.skin;
+            const hairColor = this.hairColor;
+            // Haare
+            Eisdealer.crc2.beginPath();
+            Eisdealer.crc2.arc(x, y, radius + 10, 0, Math.PI * 2); // Etwas größerer Kreis
+            Eisdealer.crc2.fillStyle = hairColor;
+            Eisdealer.crc2.fillRect(x - (radius + 10), y + radius - 40, 100, 50);
+            Eisdealer.crc2.fill();
+            // Ohren zeichnen
+            Eisdealer.crc2.beginPath();
+            Eisdealer.crc2.arc(x - radius, y, 10, 0, Math.PI);
+            Eisdealer.crc2.arc(x + radius, y, 10, 0, Math.PI);
+            Eisdealer.crc2.fillStyle = skin;
+            Eisdealer.crc2.strokeStyle = "#52402a";
+            Eisdealer.crc2.fill();
+            Eisdealer.crc2.stroke();
+            // Kopf
+            Eisdealer.crc2.beginPath();
+            Eisdealer.crc2.arc(x, y, radius, 0, Math.PI * 2);
+            Eisdealer.crc2.fillStyle = skin;
+            Eisdealer.crc2.strokeStyle = "#52402a";
+            Eisdealer.crc2.fill();
+            Eisdealer.crc2.stroke();
+            // Pony (Viertelkreis oben auf dem Kopf)
+            Eisdealer.crc2.beginPath();
+            Eisdealer.crc2.arc(x, y - radius / 8, radius, Math.PI * 1.15, Math.PI * 1.85); // Pony etwas nach oben verschoben
+            Eisdealer.crc2.fillStyle = hairColor;
+            Eisdealer.crc2.fill();
+            // Augen zeichnen
+            Eisdealer.crc2.beginPath();
+            Eisdealer.crc2.arc(x - 15, y - 10, 5, 0, Math.PI * 2);
+            Eisdealer.crc2.arc(x + 15, y - 10, 5, 0, Math.PI * 2);
+            Eisdealer.crc2.fillStyle = '#000000';
+            Eisdealer.crc2.fill();
+            // Mund zeichnen
+            Eisdealer.crc2.beginPath();
+            Eisdealer.crc2.arc(x, y + 10, 15, Math.PI, 2 * Math.PI, false);
+            Eisdealer.crc2.strokeStyle = '#ff0000'; // Roter Mund, wenn der Kunde nicht glücklich ist
+            Eisdealer.crc2.stroke();
+        }
+        drawCustomer() {
+            switch (this.emotion) {
+                case "happy":
+                    this.drawCustomerHappy();
+                    break;
+                default:
+                    this.drawCustomerAngry();
+            }
         }
         drawReceiptDelayed() {
             setTimeout(() => {
                 this.drawReceipt();
+                if (this.orderCorrect) {
+                    this.emotion = "happy";
+                }
+                else {
+                    this.emotion = "angry";
+                }
             }, 5000);
         }
         drawReceipt() {
@@ -244,12 +310,12 @@ var Eisdealer;
                     this.drawCustomer();
                     break;
                 case "pay":
-                    this.drawCustomer();
+                    this.drawCustomerHappy();
                     this.drawReceiptDelayed();
                     this.orderCompleted = true;
                     break;
                 case "paid":
-                    this.drawCustomer();
+                    this.drawCustomerHappy();
                     this.orderCompleted = true;
                 default:
                     this.drawCustomer();
