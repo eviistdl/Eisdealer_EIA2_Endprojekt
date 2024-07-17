@@ -214,28 +214,28 @@ var Eisdealer;
             for (let i = 0; i < chosenScoops.length; i++) {
                 const chosenScoop = chosenScoops[i];
                 const customerOrder = customer.order[i];
-                // Suche die entsprechende Eissorte im Datenbestand
+                // Suche die entsprechende Eissorte in data
                 const chosenIceCream = Eisdealer.iceCreamData.find(iceCream => iceCream.flavor === chosenScoop.flavor);
                 const customerIceCream = Eisdealer.iceCreamData.find(iceCream => iceCream.flavor === customerOrder.flavor);
-                // Überprüfe, ob beide Sorten existieren und ihre Eigenschaften übereinstimmen
+                // Überprüfe Übereinstimmung der Arrays
                 if (!chosenIceCream || !customerIceCream || chosenIceCream.flavor !== customerIceCream.flavor) {
                     customer.orderCorrect = false;
                     break;
                 }
             }
         }
-        if (!customer.orderCorrect) {
+        if (!customer.orderCorrect) { //stimmt nicht überien
             customer.emotion = "angry";
             customer.state = "paid";
             console.log(`Order for ${customer.type} is not correct!`);
         }
-        else {
+        else { //stimmt überein
             console.log(`Order for ${customer.type} is correct!`);
             customer.emotion = "happy";
             customer.orderCompleted = true;
             customer.state = "pay";
             deleteScoopChosen();
-            if (customer.paid) {
+            if (customer.paid) { //setze orderCompleted zurück auf false
                 customer.orderCompleted = false;
             }
         }

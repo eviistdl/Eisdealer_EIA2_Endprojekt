@@ -8,18 +8,17 @@ var Eisdealer;
             this.color = "#d2b48c";
         }
         draw() {
-            //console.log("drawCup")
             const x = 800;
             const y = 450;
             const widthTop = 150;
             const widthBottom = 100;
             const height = 100;
             Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.moveTo(x, y); // Starting point (top-left)
-            Eisdealer.crc2.lineTo(x + widthTop, y); // Top side
-            Eisdealer.crc2.lineTo(x + (widthTop - widthBottom) / 2 + widthBottom, y + height); // Bottom-right side
-            Eisdealer.crc2.lineTo(x + (widthTop - widthBottom) / 2, y + height); // Bottom-left side
-            Eisdealer.crc2.closePath(); // Close the path
+            Eisdealer.crc2.moveTo(x, y);
+            Eisdealer.crc2.lineTo(x + widthTop, y);
+            Eisdealer.crc2.lineTo(x + (widthTop - widthBottom) / 2 + widthBottom, y + height);
+            Eisdealer.crc2.lineTo(x + (widthTop - widthBottom) / 2, y + height);
+            Eisdealer.crc2.closePath();
             Eisdealer.crc2.fillStyle = this.color;
             Eisdealer.crc2.fill();
         }

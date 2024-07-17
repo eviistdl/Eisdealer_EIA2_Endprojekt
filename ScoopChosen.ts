@@ -14,7 +14,7 @@ namespace Eisdealer {
 
         draw() {
             crc2.beginPath();
-            crc2.arc(this.x, this.y, this.radius, Math.PI, 2 * Math.PI); // Halbkreis von PI bis 2*PI (180° bis 360°)
+            crc2.arc(this.x, this.y, this.radius, Math.PI, 2 * Math.PI);
             crc2.fillStyle = this.color;
             crc2.fill();
         

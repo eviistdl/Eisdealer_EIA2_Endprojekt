@@ -10,7 +10,6 @@ namespace Eisdealer {
     }
 
     public draw(){
-        //console.log("drawCup")
         const x = 800;
         const y = 450;
         const widthTop = 150;
@@ -18,11 +17,11 @@ namespace Eisdealer {
         const height = 100;
 
         crc2.beginPath();
-        crc2.moveTo(x, y); // Starting point (top-left)
-        crc2.lineTo(x + widthTop, y); // Top side
-        crc2.lineTo(x + (widthTop - widthBottom) / 2 + widthBottom, y + height); // Bottom-right side
-        crc2.lineTo(x + (widthTop - widthBottom) / 2, y + height); // Bottom-left side
-        crc2.closePath(); // Close the path
+        crc2.moveTo(x, y); 
+        crc2.lineTo(x + widthTop, y); 
+        crc2.lineTo(x + (widthTop - widthBottom) / 2 + widthBottom, y + height);
+        crc2.lineTo(x + (widthTop - widthBottom) / 2, y + height);
+        crc2.closePath(); 
 
         crc2.fillStyle = this.color;
         crc2.fill();

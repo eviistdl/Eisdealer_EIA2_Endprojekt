@@ -9,7 +9,6 @@ namespace Eisdealer {
     }
 
     public draw(){
-        //console.log("trash draw");
          // Mülltonne
          crc2.beginPath();
          crc2.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -18,13 +17,13 @@ namespace Eisdealer {
  
          crc2.beginPath();
          crc2.arc(this.x, this.y, 40, 0, Math.PI * 2);
-         crc2.strokeStyle = '#363636'; // Graue Farbe
+         crc2.strokeStyle = '#363636';
          crc2.stroke();
          
           // Griff
           const gripWidth = 35;
          const gripHeight = 8;
-         crc2.fillStyle = '#363636'; // Schwarze Farbe für den Griff
+         crc2.fillStyle = '#363636'; 
          crc2.fillRect(this.x - gripWidth / 2, this.y - gripHeight / 2, gripWidth, gripHeight);
          
          //Details
@@ -39,7 +38,7 @@ namespace Eisdealer {
              crc2.beginPath();
              crc2.moveTo(x1, y1);
              crc2.lineTo(x2, y2);
-             crc2.strokeStyle = '#363636'; // Schwarze Linien
+             crc2.strokeStyle = '#363636';
              crc2.stroke();
          }
  

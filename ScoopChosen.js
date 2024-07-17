@@ -13,7 +13,7 @@ var Eisdealer;
         }
         draw() {
             Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(this.x, this.y, this.radius, Math.PI, 2 * Math.PI); // Halbkreis von PI bis 2*PI (180° bis 360°)
+            Eisdealer.crc2.arc(this.x, this.y, this.radius, Math.PI, 2 * Math.PI);
             Eisdealer.crc2.fillStyle = this.color;
             Eisdealer.crc2.fill();
             Eisdealer.crc2.beginPath();

@@ -3,7 +3,7 @@ body {
 }
 
 canvas {
-    border: 5px solid rgb(79, 121, 45); /* Optional: adds a white border around the canvas */
+    border: 5px solid rgb(79, 121, 45);
 }
 
 #earnings,

@@ -326,11 +326,9 @@ private drawCustomerAngry() {
             } else {
                 this.emotion = "angry";
             }
-        }, 5000); 
+        }, 3000); 
     }
     
-    
-
     public drawReceipt(): void {
         if (this.state === "paid") return;
     

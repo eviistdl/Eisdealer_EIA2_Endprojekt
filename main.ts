@@ -152,7 +152,6 @@ namespace Eisdealer {
             if (item instanceof Trash) {
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
                 if (distance <= 50) {
-                    
                     deleteScoopChosen(); // Lösche alle ausgewählten Eiskugeln
                     return;
                 }
@@ -264,11 +263,11 @@ namespace Eisdealer {
                 const chosenScoop = chosenScoops[i];
                 const customerOrder = customer.order[i];
     
-                // Suche die entsprechende Eissorte im Datenbestand
+                // Suche die entsprechende Eissorte in data
                 const chosenIceCream = iceCreamData.find(iceCream => iceCream.flavor === chosenScoop.flavor);
                 const customerIceCream = iceCreamData.find(iceCream => iceCream.flavor === customerOrder.flavor);
     
-                // Überprüfe, ob beide Sorten existieren und ihre Eigenschaften übereinstimmen
+                // Überprüfe Übereinstimmung der Arrays
                 if (!chosenIceCream || !customerIceCream || chosenIceCream.flavor !== customerIceCream.flavor) {
                     customer.orderCorrect = false;
                     break;
@@ -276,25 +275,23 @@ namespace Eisdealer {
             }
         }
     
-        if (!customer.orderCorrect) {
+        if (!customer.orderCorrect) { //stimmt nicht überien
             customer.emotion = "angry";
             customer.state = "paid";
             console.log(`Order for ${customer.type} is not correct!`);
-        } else {
+        } else { //stimmt überein
             console.log(`Order for ${customer.type} is correct!`);
             customer.emotion = "happy";
             customer.orderCompleted = true;
             customer.state = "pay";
             deleteScoopChosen();
     
-            if (customer.paid) {
+            if (customer.paid) { //setze orderCompleted zurück auf false
                 customer.orderCompleted = false;
             }
         }
     }
     
-    
-
     function drawBackround(): void {
         //Hintergrund
         const tileSize = 50; // Größe der Kacheln

@@ -276,7 +276,7 @@ var Eisdealer;
                 else {
                     this.emotion = "angry";
                 }
-            }, 5000);
+            }, 3000);
         }
         drawReceipt() {
             if (this.state === "paid")
