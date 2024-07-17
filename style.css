@@ -6,10 +6,23 @@ canvas {
     border: 5px solid rgb(79, 121, 45); /* Optional: adds a white border around the canvas */
 }
 
-#earnings {
-    position: absolute; 
-    top: 30px; 
+#earnings,
+#receipt {
+    width: 230px;
+    font-family: sans-serif;
+    position: absolute;  
     left: 760px; 
     font-size: 18px;
     color: black;
 }
+
+#earnings {
+    top: 30px; 
+    font-size: 16pt;
+}
+#receipt {
+    top: 50px;
+    font-size: 10pt;
+}
+
+

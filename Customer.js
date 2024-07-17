@@ -2,6 +2,7 @@
 var Eisdealer;
 (function (Eisdealer) {
     class Customer extends Eisdealer.Moveables {
+        state;
         radius;
         skin;
         hairColor;
@@ -10,6 +11,7 @@ var Eisdealer;
         order;
         orderCompleted = false;
         customerPay = false;
+        paid = false;
         constructor(_x, _y, _direction, _speed, _type, allObjects) {
             super(_x, _y, _direction, _speed, _type);
             this.radius = 40;
@@ -21,28 +23,45 @@ var Eisdealer;
             this.orderCompleted = false;
         }
         move() {
-            if (!this.targetChair || this.targetChair.isOccupied()) {
-                this.findNextUnoccupiedChair();
+            switch (this.state) {
+                case "walk in":
+                    if (!this.targetChair || this.targetChair.isOccupied()) {
+                        this.findNextUnoccupiedChair();
+                    }
+                    if (this.targetChair) {
+                        const dx = this.targetChair.x - this.x + 50;
+                        const dy = this.targetChair.y - this.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        const moveDistance = Math.min(this.speed.x, distance);
+                        this.x += (dx / distance) * moveDistance;
+                        this.y += (dy / distance) * moveDistance;
+                        if (distance < this.speed.x) {
+                            this.targetChair.occupy();
+                            this.speed = new Eisdealer.Vector(0, 0);
+                            this.targetChair = null;
+                            // Bestellung aufgeben:
+                            this.placeOrder();
+                            this.state = "sit";
+                        }
+                    }
+                    break;
+                case "paid":
+                    const targetX = 500;
+                    const targetY = 700;
+                    const dx = targetX - this.x;
+                    const dy = targetY - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    this.speed = new Eisdealer.Vector(2, 2);
+                    const moveDistance = Math.min(this.speed.x, distance);
+                    this.x += (dx / distance) * moveDistance;
+                    this.y += (dy / distance) * moveDistance;
+                    if (this.y > 699) {
+                        this.allObjects = this.allObjects.filter(obj => obj !== this);
+                        this.speed = new Eisdealer.Vector(2, 2);
+                        this.createSingleCustomer();
+                    }
+                    break;
             }
-            if (this.targetChair) {
-                const dx = this.targetChair.x - this.x + 50;
-                const dy = this.targetChair.y - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const moveDistance = Math.min(this.speed.x, distance);
-                this.x += (dx / distance) * moveDistance;
-                this.y += (dy / distance) * moveDistance;
-                if (distance < this.speed.x) {
-                    this.targetChair.occupy();
-                    this.speed = new Eisdealer.Vector(0, 0);
-                    this.targetChair = null;
-                    //Bestellung aufgeben:
-                    this.placeOrder();
-                }
-            }
-            // if (this.orderCompleted) {
-            //     this.speed = new Vector(1, 1); // Beispiel für Änderungen in der Geschwindigkeit
-            //     this.leave();
-            // }
         }
         findNextUnoccupiedChair() {
             for (const obj of this.allObjects) {
@@ -52,11 +71,23 @@ var Eisdealer;
                 }
             }
         }
+        createCustomers() {
+            this.createSingleCustomer();
+        }
+        createSingleCustomer() {
+            console.log("create single customer");
+            let customerX = 500;
+            let customerY = 600;
+            let customer = new Customer(customerX, customerY, new Eisdealer.Vector(0, 0), new Eisdealer.Vector(4, 4), `Customer ${Eisdealer.customerCount + 1}`, Eisdealer.allObjects);
+            Eisdealer.allObjects.push(customer); // Kunden zu allObjects hinzufügen
+            customer.state = "walk in";
+            Eisdealer.customerCount++; // Erhöhe die Kundenanzahl
+        }
         placeOrder() {
             // Zufällige Anzahl von Kugeln zwischen 3 und 6 auswählen
             const numScoops = Math.floor(Math.random() * 4) + 3; // 3 bis 6 Kugeln
             // Array von verfügbaren Eissorten aus data.ts
-            const availableFlavors = Eisdealer.data;
+            const availableFlavors = Eisdealer.iceCreamData;
             // Zufällige Auswahl von Eissorten für die Bestellung
             for (let i = 0; i < numScoops; i++) {
                 const randomIndex = Math.floor(Math.random() * availableFlavors.length);
@@ -68,28 +99,20 @@ var Eisdealer;
         }
         getReceipt() {
             let amount = 0;
+            let receiptContent = "<h3>Receipt</h3><ul>";
             // Durchlaufe alle Kugeln in der Bestellung und addiere ihre Preise zum Gesamtpreis
             for (let scoop of this.order) {
+                receiptContent += `${scoop.flavor}: ${scoop.price} € <br>`;
                 amount += scoop.price;
-                break;
             }
-            console.log(`Receipt for ${this.type}: Total Price = ${amount} credits`);
+            receiptContent += `</ul><p>Total: ${amount} €</p>`;
+            //console.log(`Receipt for ${this.type}: Total Price = ${amount} credits`);
+            // Füge den Receipt-Content in das HTML-Element mit der ID "receipt" ein
+            const receiptElement = document.getElementById("receipt");
+            if (receiptElement) {
+                receiptElement.innerHTML = receiptContent;
+            }
             return amount;
-        }
-        leave() {
-            this.speed = new Eisdealer.Vector(4, 4); // Geschwindigkeit auf 4 setzen
-            // Bewegungsberechnung zum Ziel (500, 700)
-            const dx = 500 - this.x;
-            const dy = 610 - this.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const moveDistance = Math.min(distance, Math.sqrt(this.speed.x * this.speed.x + this.speed.y * this.speed.y));
-            this.x += (dx / distance) * moveDistance;
-            this.y += (dy / distance) * moveDistance;
-            // Wenn der Kunde die Zielkoordinaten erreicht hat, aus allObjects entfernen
-            if (this.y > 609) {
-                //console.log(`${this.type} left the shop.`);
-                this.allObjects = this.allObjects.filter(obj => obj !== this);
-            }
         }
         drawOrder() {
             if (!this.orderCompleted) {
@@ -103,19 +126,12 @@ var Eisdealer;
                     const y = startY + i * yOffset;
                     let color = '';
                     // Farbe basierend auf der Eiscremesorte setzen
-                    switch (this.order[i].flavor) {
-                        case 'pistacchio':
-                            color = '#87b07b';
-                            break;
-                        case 'strawberry':
-                            color = '#eb3477';
-                            break;
-                        case 'lemon':
-                            color = '#f7dd31';
-                            break;
-                        default:
-                            color = '#000000';
-                            break;
+                    const iceCream = Eisdealer.iceCreamData.find(iceCream => iceCream.flavor === this.order[i].flavor);
+                    if (iceCream) {
+                        color = iceCream.color;
+                    }
+                    else {
+                        color = '#000000'; // Fallback-Farbe, falls die Sorte nicht gefunden wird
                     }
                     // Eiskugeln
                     Eisdealer.crc2.beginPath();
@@ -195,37 +211,46 @@ var Eisdealer;
             }, 5000);
         }
         drawReceipt() {
+            if (this.state === "paid")
+                return;
             this.customerPay = true;
-            // Senkrechtes Rechteck zeichnen
             Eisdealer.crc2.beginPath();
             Eisdealer.crc2.rect(this.x + 30, this.y - 30, 20, 25);
-            Eisdealer.crc2.fillStyle = "#ffffff"; // Weiß ausfüllen
-            Eisdealer.crc2.strokeStyle = "#808080"; // Graue Umrandung
+            Eisdealer.crc2.fillStyle = "#ffffff";
+            Eisdealer.crc2.strokeStyle = "#808080";
             Eisdealer.crc2.lineWidth = 2;
             Eisdealer.crc2.fill();
             Eisdealer.crc2.stroke();
             Eisdealer.crc2.closePath();
-            // Ausrufezeichen zeichnen
             Eisdealer.crc2.beginPath();
             Eisdealer.crc2.moveTo(this.x + 40, this.y - 35);
-            Eisdealer.crc2.lineTo(this.x + 40, this.y - 45); // Senkrechter Strich
-            Eisdealer.crc2.strokeStyle = "#ff0000"; // Rote Farbe
+            Eisdealer.crc2.lineTo(this.x + 40, this.y - 45);
+            Eisdealer.crc2.strokeStyle = "#ff0000";
             Eisdealer.crc2.lineWidth = 3;
             Eisdealer.crc2.stroke();
             Eisdealer.crc2.closePath();
             Eisdealer.crc2.beginPath();
-            Eisdealer.crc2.arc(this.x + 40, this.y - 30, 2, 0, Math.PI * 2); // Punkt darunter
-            Eisdealer.crc2.fillStyle = "#ff0000"; // Rote Farbe
+            Eisdealer.crc2.arc(this.x + 40, this.y - 30, 2, 0, Math.PI * 2);
+            Eisdealer.crc2.fillStyle = "#ff0000";
             Eisdealer.crc2.fill();
             Eisdealer.crc2.closePath();
+            Eisdealer.crc2.lineWidth = 1;
         }
         draw() {
-            if (this.allObjects.includes(this)) {
-                this.drawCustomer();
-                if (this.orderCompleted) {
+            switch (this.state) {
+                case "sit":
+                    this.drawCustomer();
+                    break;
+                case "pay":
                     this.drawCustomer();
                     this.drawReceiptDelayed();
-                }
+                    this.orderCompleted = true;
+                    break;
+                case "paid":
+                    this.drawCustomer();
+                    this.orderCompleted = true;
+                default:
+                    this.drawCustomer();
             }
         }
         update() {

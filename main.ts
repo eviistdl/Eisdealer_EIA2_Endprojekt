@@ -9,9 +9,6 @@ namespace Eisdealer {
     export let allObjects: Drawables[] = [];
     let targetPosition: Vector = new Vector(0, 0);
     let chosenScoops: ScoopChosen[] = [];
-    let colorPistacchio: string = "#87b07b";
-    let colorStrawberry: string = "#eb3477";
-    let colorLemon: string = "#f7dd31";
     let earningsDisplay: HTMLElement | null;
      
     
@@ -36,62 +33,100 @@ namespace Eisdealer {
         allObjects.push(chair2);
         const chair3: Chair = new Chair(530, 350);
         allObjects.push(chair3);
-
-        let pistacchio: Scoop = new Scoop(80, 100, colorPistacchio)
-        allObjects.push(pistacchio);
-        let strawberry: Scoop = new Scoop(200, 100, colorStrawberry)
-        allObjects.push(strawberry);
-        let lemon: Scoop = new Scoop(320, 100, colorLemon)
-        allObjects.push(lemon);
+        
+        // Generiere die Scoops dynamisch basierend auf den Daten
+        generateScoops(iceCreamData);
 
         // Eisdealer erstellen und hinzufügen
         let eisdealer = new Eisdealer(300, 400, new Vector(0, 0), new Vector(5, 5), "Eisdealer");
         allObjects.push(eisdealer);
 
         setInterval(animate, 20);
-        createCustomer();
+        mainLoop();
+        // createCustomer();
 
     }
+
+    // Funktion zum Generieren von Scoops basierend auf den Daten
+    function generateScoops(_data: IceCream[]): void {
+        let xPositions = [80, 200, 320];
+        for (let i = 0; i < _data.length; i++) {
+            let iceCream = _data[i];
+            let scoop = new Scoop(xPositions[i], 100, iceCream.color);
+            allObjects.push(scoop);
+        }
+    }
+
+    export let customerCount = 0;
+
+    // Funktion zum Zählen der aktuellen Kunden im allObjects Array
+    function countCustomers(): number {
+        return allObjects.filter(obj => obj instanceof Customer).length;
+    }
+
+    // Hauptschleife zum Erstellen von Kunden
+    function mainLoop(): void {
+
+        // Setze ein Intervall, um die Kundenanzahl regelmäßig zu prüfen
+        setInterval(() => {
+            const currentCustomerCount = countCustomers();
+            //console.log(currentCustomerCount);
+            if (currentCustomerCount < 3) {
+                // Rufe die Funktion zum Erstellen von Kunden auf
+                const customer = new Customer(0, 0, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
+                customer.createCustomers();
+            }
+        }, 500); // Intervallzeit in Millisekunden (500ms = 0,5s)
+        allObjects.forEach(item => {
+            if (item instanceof Customer) {
+                item.move();
+            }
+        });
+    }
+
+    // Starte die Hauptschleife
+    mainLoop();
 
     let earningsTotal = 0
 
-    function updateEarnings(amount: number): void {
-        console.log("update earnings");
-    earningsTotal += amount;
-    if (earningsDisplay) {
-        earningsDisplay.innerHTML = `Einnahmen: ${earningsTotal} €`;
-        console.log(`Einnahmen aktualisiert: ${earningsTotal} €`);
-    } else {
-        console.error("earningsDisplay is null or undefined.");
-    }
-    }
-
-
-    // Funktion, um Kunden zu erstellen
-    function createCustomer(): void {
-        let maxCustomers = 3;
-
-        // Rekursive Funktion zur Erstellung von Kunden
-        function createCustomersIfNeeded(): void {
-        
-            let customerCount = allObjects.filter(obj => obj instanceof Customer).length;
-
-            // Wenn weniger als maxCustomers Kunden vorhanden sind, erstelle einen neuen Kunden
-            if (customerCount < maxCustomers) {
-                let customerX = 500; 
-                let customerY = 600; 
-                let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
-                allObjects.push(customer); // Kunden zu allObjects hinzufügen
-            }
-
-            if (customerCount < maxCustomers) {
-                setTimeout(createCustomersIfNeeded, 3000); // Wartezeit vor dem nächsten Kunden
-            }
+        function updateEarnings(amount: number): void {
+            //console.log("update earnings");
+        earningsTotal += amount;
+        if (earningsDisplay) {
+            earningsDisplay.innerHTML = `Einnahmen: ${earningsTotal} €`;
+            //console.log(`Einnahmen aktualisiert: ${earningsTotal} €`);
+        } else {
+            console.error("earningsDisplay is null or undefined.");
         }
-        createCustomersIfNeeded();
-    }
+        }
 
-    
+
+    // // Funktion, um Kunden zu erstellen
+    // function createCustomer(): void {
+    //     let maxCustomers = 3;
+
+    //     // Rekursive Funktion zur Erstellung von Kunden
+    //     function createCustomersIfNeeded(): void {
+            
+        
+    //         let customerCount = allObjects.filter(obj => obj instanceof Customer).length;
+
+    //         // Wenn weniger als maxCustomers Kunden vorhanden sind, erstelle einen neuen Kunden
+    //         if (customerCount < maxCustomers) {
+    //             let customerX = 500; 
+    //             let customerY = 600; 
+    //             let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
+    //             allObjects.push(customer); // Kunden zu allObjects hinzufügen
+    //             customer.state = "walk in";
+    //         }
+
+    //         if (customerCount < maxCustomers) {
+    //             setTimeout(createCustomersIfNeeded, 3000); // Wartezeit vor dem nächsten Kunden
+    //         }
+    //     }
+    //     createCustomersIfNeeded();
+    // }
+
 
     function animate(): void {
         drawBackround();
@@ -120,7 +155,7 @@ namespace Eisdealer {
     }
 
     // Definition der Hindernisse
-    const noGoZone1 = { x: 0, y: 0, width: 440, height: 240 };
+    const noGoZone1 = { x: 0, y: 0, width: 1000, height: 240 };
 
      // Funktion zur Kollisionserkennung
      export function collisionNoGoZone(x: number, y: number): boolean {
@@ -138,7 +173,7 @@ namespace Eisdealer {
     function deleteScoopChosen(){
         chosenScoops = [];
         allObjects = allObjects.filter(obj => !(obj instanceof ScoopChosen));
-        console.log("Scoops gelöscht");
+        //console.log("Scoops gelöscht");
     }
     export function handleClick(event: MouseEvent): void {
         let canvasRect = (event.target as HTMLCanvasElement).getBoundingClientRect(); 
@@ -167,17 +202,23 @@ namespace Eisdealer {
 
     // Kunden anklicken und checkOrder aufrufen, Array löschen
         allObjects.forEach(item => {
+            let customerClicked = false;
             if (item instanceof Customer) {
+                customerClicked = true;
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
-                if (distance <= 50) { 
-                    checkOrder(item as Customer); 
+                if (customerClicked && distance <= 50) { 
+                    checkOrder(item as Customer); //Zugriff auf den bestimmten Customer
+                    // customerClicked = false;
                 }
-                if (item.customerPay && distance <= 50) {
+                if (customerClicked && distance <= 50 && item.customerPay) {
                     console.log("geld einsammeln");
-                    const amount = item.getReceipt(); 
+                    const amount = item.getReceipt();
+
+                    item.getReceipt();
                     updateEarnings(amount); 
-                    item.drawCustomer();
-                    item.customerPay = false;
+                    item.state = "paid";
+                    item.orderCompleted = false;
+                    customerClicked = false;
                 }
             }
         });
@@ -208,67 +249,93 @@ namespace Eisdealer {
             }
         });
         
-        //Ausgewählte Sorten rechts zeichnen
-        if (EisdealerInArea) {
-            if (chosenScoops.length < maxScoops) {
-                for (const item of allObjects) {
-                    if (item instanceof Scoop) {
-                        const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
-                        if (distance <= scoopRadius) {
-                            let flavorChosenScoop: string;
+        // Ausgewählte Sorten rechts zeichnen
+    if (EisdealerInArea) {
+        if (chosenScoops.length < maxScoops) {
+            for (const item of allObjects) {
+                if (item instanceof Scoop) {
+                    const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
+                    if (distance <= scoopRadius) {
+                        let chosenScoop: ScoopChosen | null = null;
 
-                        // Farbe des Scoops überprüfen und den entsprechenden Geschmack zuweisen
-                        if (item.color === colorPistacchio) { 
-                            flavorChosenScoop = 'pistacchio';
-                        } else if (item.color === colorStrawberry) { 
-                            flavorChosenScoop = 'strawberry';
-                        } else if (item.color === colorLemon) { 
-                            flavorChosenScoop = 'lemon';
-                        } else {
-                            flavorChosenScoop = 'unknown';
+                        // Durchsuche iceCreamData, um die passenden Eigenschaften zu finden
+                        for (let i = 0; i < iceCreamData.length; i++) {
+                            const iceCream = iceCreamData[i];
+                            if (item.color === iceCream.color) {
+                                chosenScoop = new ScoopChosen(
+                                    scoopPositions[chosenScoops.length].x, 
+                                    scoopPositions[chosenScoops.length].y, 
+                                    iceCream.color, 
+                                    iceCream.flavor
+                                );
+                                break;
+                            }
                         }
 
-                        let chosenScoop = new ScoopChosen(scoopPositions[chosenScoops.length].x, scoopPositions[chosenScoops.length].y, item.color, flavorChosenScoop);
-                        chosenScoops.push(chosenScoop);
-                        allObjects.push(chosenScoop);
-    
+                        if (chosenScoop) {
+                            chosenScoops.push(chosenScoop);
+                            allObjects.push(chosenScoop);
+
                             // Cup wird direkt nach dem ersten ScoopChosen gezeichnet
                             if (chosenScoops.length === 1) {
                                 let cup = new Cup(800, 400);
                                 allObjects.push(cup);
                             }
-    
+
                             break;
                         }
                     }
                 }
             }
         }
-    
-        //console.log(`Clicked at position: (${clickX}, ${clickY})`);
+    }
+
+    // console.log(`Clicked at position: (${clickX}, ${clickY})`);
     }
 
     function checkOrder(customer: Customer): void {
+        let orderCorrect = true; // Variable zur Überprüfung, ob die Bestellung korrekt ist
     
-        for (let i = 0; i < chosenScoops.length; i++) {
-            const chosenScoop = chosenScoops[i];
-            const customerOrder = customer.order[i];
-    
-            if (chosenScoop.flavor !== customerOrder.flavor) { //Eisbecher nicht korrekt
-                console.log(`Order for ${customer.type} is not correct!`);
-                break; 
-            }
+        // Überprüfe die Anzahl
+        if (chosenScoops.length !== customer.order.length) {
+            orderCorrect = false;
+            //console.log("Eis Kugelanzahl simmt nicht überein");
+        } else {
+            // Vergleiche die gewählten Scoops mit der Bestellung
+            for (let i = 0; i < chosenScoops.length; i++) { //Scoop Array durchgehen und prüfen
+                const chosenScoop = chosenScoops[i];
+                const customerOrder = customer.order[i];
+                //console.log(`Vergleiche gewählten Scoop ${i + 1}: ${chosenScoop.flavor} mit Kundenbestellung: ${customerOrder.flavor}`);
 
-            else { //Eisbecher ist korrekt
-                console.log(`Order for ${customer.type} is correct!`);
-                customer.orderCompleted = true;
-                customer.getReceipt();
-                deleteScoopChosen();
-                //createCustomer();
-                break; 
+    
+                // Suche die entsprechende Eissorte im Datenbestand
+                const chosenIceCream = iceCreamData.find(iceCream => iceCream.flavor === chosenScoop.flavor);
+                const customerIceCream = iceCreamData.find(iceCream => iceCream.flavor === customerOrder.flavor);
+    
+                // Überprüfe, ob beide Sorten existieren und ihre Eigenschaften übereinstimmen
+                if (!chosenIceCream || !customerIceCream || chosenIceCream.flavor !== customerIceCream.flavor) {
+                    //console.log(`Eissorte nicht gefunden. Gewählt: ${chosenIceCream ? chosenIceCream.flavor : 'null'}, Bestellt: ${customerIceCream ? customerIceCream.flavor : 'null'}`);
+                    orderCorrect = false;
+                    break;
+                }
+            }
+        }
+    
+        if (!orderCorrect) { // Bestellung ist nicht korrekt
+            //console.log(`Order for ${customer.type} is not correct!`);
+        } else { // Bestellung ist korrekt
+            //console.log(`Order for ${customer.type} is correct!`);
+            customer.orderCompleted = true;
+            customer.state = "pay";
+            deleteScoopChosen();
+    
+            // Bestellung abgeschlossen und bezahlt
+            if (customer.paid) {
+                customer.orderCompleted = false;
             }
         }
     }
+    
 
     function drawBackround(): void {
         //Hintergrund
