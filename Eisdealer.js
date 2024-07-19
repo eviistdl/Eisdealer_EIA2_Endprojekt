@@ -7,6 +7,7 @@ var Eisdealer;
         hairColor;
         mustacheColor;
         target;
+        targetReached;
         constructor(_x, _y, _direction, _speed, _type) {
             super(_x, _y, _direction, _speed, _type);
             this.y = _y;
@@ -15,6 +16,7 @@ var Eisdealer;
             this.hairColor = "#170f05";
             this.mustacheColor = "#170f05";
             this.target = null;
+            this.targetReached = false;
         }
         setTarget(target) {
             this.target = target;
@@ -35,6 +37,7 @@ var Eisdealer;
                     this.target = null; // Ziel aufgeben, wenn eine Kollision festgestellt wird
                 }
                 if (distance < this.speed.x) {
+                    this.targetReached = true;
                     this.target = null;
                 }
             }
