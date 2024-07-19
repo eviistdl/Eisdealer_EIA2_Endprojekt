@@ -1,5 +1,6 @@
-namespace Eisdealer {    export class Customer extends Moveables {
-    public state: "walk in" | "sit" | "pay" | "paid"; 
+namespace Eisdealer {    
+    export class Customer extends Moveables {
+    public state: "walk in" | "sit" | "pay" | "leave"; 
     public emotion: "happy" | "angry";
     private radius: number;
     private skin: string;
@@ -62,7 +63,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
                 }
                 break;
     
-            case "paid":
+            case "leave":
                 const targetX = 500;
                 const targetY = 700;
                 const dx = targetX - this.x;
@@ -88,7 +89,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
     }
 
     private findNextUnoccupiedChair(): void {
-        console.log("find next unoccupied chair")
+        //console.log("find next unoccupied chair")
         for (const obj of this.allObjects) {
             if (obj instanceof Chair && !obj.isOccupied()) {
                 this.targetChair = obj;
@@ -96,7 +97,6 @@ namespace Eisdealer {    export class Customer extends Moveables {
             }
         }
     }
-    
 
     public createCustomers():void {
         this.createSingleCustomer();
@@ -335,7 +335,7 @@ private drawCustomerAngry() {
     }
     
     public drawReceipt(): void {
-        if (this.state === "paid") return;
+        if (this.state === "leave") return;
     
         this.customerPay = true;
         crc2.beginPath();
@@ -373,7 +373,7 @@ private drawCustomerAngry() {
                 this.drawReceiptDelayed();
                 this.orderCompleted = true;
                 break;
-            case "paid":
+            case "leave":
                 this.drawCustomerHappy();
                 this.orderCompleted = true;
             default:

@@ -5,17 +5,15 @@ namespace Eisdealer {
         private hairColor: string;
         private mustacheColor: string;
         private target: Vector | null;
-        public targetReached: boolean;
+      
 
         constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string) {
             super (_x, _y, _direction, _speed, _type)
-            this.y = _y;
             this.radius = 40;
             this.skin = "#f5cda2";
             this.hairColor = "#170f05";
             this.mustacheColor = "#170f05";
             this.target = null;
-            this.targetReached = false;
         }
 
         public setTarget(target: Vector): void {
@@ -40,7 +38,6 @@ namespace Eisdealer {
                 }
 
                 if (distance < this.speed.x) {
-                    this.targetReached = true;
                     this.target = null;
                 }
             }
@@ -48,6 +45,7 @@ namespace Eisdealer {
         
 
         draw(): void {
+        //console.log("eisdealer draw")
         const x = this.x;
         const y = this.y;
         const radius = this.radius;

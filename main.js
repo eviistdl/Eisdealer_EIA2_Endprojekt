@@ -150,7 +150,7 @@ var Eisdealer;
                     const amount = item.getReceipt();
                     item.getReceipt();
                     updateEarnings(amount);
-                    item.state = "paid";
+                    item.state = "leave";
                     item.orderCompleted = false;
                     customerClicked = false;
                 }
@@ -237,7 +237,7 @@ var Eisdealer;
         }
         if (!customer.orderCorrect) { //stimmt nicht überien
             customer.emotion = "angry";
-            customer.state = "paid";
+            customer.state = "leave";
             console.log(`Order for ${customer.type} is not correct!`);
         }
         else { //stimmt überein

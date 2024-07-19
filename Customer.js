@@ -52,7 +52,7 @@ var Eisdealer;
                         }
                     }
                     break;
-                case "paid":
+                case "leave":
                     const targetX = 500;
                     const targetY = 700;
                     const dx = targetX - this.x;
@@ -73,7 +73,7 @@ var Eisdealer;
             }
         }
         findNextUnoccupiedChair() {
-            console.log("find next unoccupied chair");
+            //console.log("find next unoccupied chair")
             for (const obj of this.allObjects) {
                 if (obj instanceof Eisdealer.Chair && !obj.isOccupied()) {
                     this.targetChair = obj;
@@ -282,7 +282,7 @@ var Eisdealer;
             }, 3000);
         }
         drawReceipt() {
-            if (this.state === "paid")
+            if (this.state === "leave")
                 return;
             this.customerPay = true;
             Eisdealer.crc2.beginPath();
@@ -317,7 +317,7 @@ var Eisdealer;
                     this.drawReceiptDelayed();
                     this.orderCompleted = true;
                     break;
-                case "paid":
+                case "leave":
                     this.drawCustomerHappy();
                     this.orderCompleted = true;
                 default:

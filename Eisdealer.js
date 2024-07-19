@@ -7,16 +7,13 @@ var Eisdealer;
         hairColor;
         mustacheColor;
         target;
-        targetReached;
         constructor(_x, _y, _direction, _speed, _type) {
             super(_x, _y, _direction, _speed, _type);
-            this.y = _y;
             this.radius = 40;
             this.skin = "#f5cda2";
             this.hairColor = "#170f05";
             this.mustacheColor = "#170f05";
             this.target = null;
-            this.targetReached = false;
         }
         setTarget(target) {
             this.target = target;
@@ -37,12 +34,12 @@ var Eisdealer;
                     this.target = null; // Ziel aufgeben, wenn eine Kollision festgestellt wird
                 }
                 if (distance < this.speed.x) {
-                    this.targetReached = true;
                     this.target = null;
                 }
             }
         }
         draw() {
+            //console.log("eisdealer draw")
             const x = this.x;
             const y = this.y;
             const radius = this.radius;
