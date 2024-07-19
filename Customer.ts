@@ -4,6 +4,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
     private radius: number;
     private skin: string;
     private hairColor: string;
+    
 
     private targetChair: Chair | null;
     public assignedChair: Chair | null;
@@ -14,6 +15,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
     public customerPay: boolean = false;
     public paid: boolean = false;
     public orderCorrect: boolean = false;
+    public orderChecked : boolean = false;
 
     constructor(_x: number, _y: number, _direction: Vector, _speed: Vector, _type: string, allObjects: Drawables[]) {
         super (_x, _y, _direction, _speed, _type)
@@ -27,6 +29,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
 
         this.order = [];
         this.orderCompleted = false;
+        this.orderChecked = false;
     }
 
     public move(): void {
@@ -93,6 +96,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
             }
         }
     }
+    
 
     public createCustomers():void {
         this.createSingleCustomer();
@@ -104,6 +108,7 @@ namespace Eisdealer {    export class Customer extends Moveables {
         let customerY = 600;
         let customer = new Customer(customerX, customerY, new Vector(0, 0), new Vector(4, 4), `Customer ${customerCount + 1}`, allObjects);
         allObjects.push(customer); // Kunden zu allObjects hinzufügen
+        this.orderChecked = false;
         customer.state = "walk in";
         customer.emotion ="happy";
         customerCount++; // Erhöhe die Kundenanzahl

@@ -129,6 +129,7 @@ var Eisdealer;
         Eisdealer.allObjects.forEach(item => {
             let customerClicked = false;
             if (item instanceof Eisdealer.Customer) {
+                let orderChecked = item.orderChecked;
                 customerClicked = true;
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
                 // Überprüfen ob Eisdealer nah genug am Kunden ist
@@ -141,11 +142,10 @@ var Eisdealer;
                         }
                     }
                 });
-                if (customerClicked && distance <= 50 && EisdealerInArea) {
+                if (customerClicked && distance <= 50 && EisdealerInArea && !orderChecked) {
                     checkOrder(item); //Zugriff auf den bestimmten Customer
-                    // customerClicked = false;
                 }
-                if (customerClicked && distance <= 50 && item.customerPay && EisdealerInArea) {
+                if (customerClicked && distance <= 50 && item.customerPay && EisdealerInArea && orderChecked) {
                     console.log("geld einsammeln");
                     const amount = item.getReceipt();
                     item.getReceipt();
@@ -215,6 +215,7 @@ var Eisdealer;
     Eisdealer.handleClick = handleClick;
     function checkOrder(customer) {
         customer.orderCorrect = true; // Variable zur Überprüfung, ob die Bestellung korrekt ist
+        customer.orderChecked = true;
         // Überprüfe die Anzahl
         if (chosenScoops.length !== customer.order.length) {
             customer.orderCorrect = false;

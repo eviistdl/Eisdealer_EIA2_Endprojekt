@@ -161,12 +161,15 @@ namespace Eisdealer {
     // Kunden anklicken und checkOrder aufrufen, Array löschen
         allObjects.forEach(item => {
             let customerClicked = false;
+            
             if (item instanceof Customer) {
+                let orderChecked = item.orderChecked;
                 customerClicked = true;
                 const distance = Math.sqrt(Math.pow(clickX - item.x, 2) + Math.pow(clickY - item.y, 2));
 
                 // Überprüfen ob Eisdealer nah genug am Kunden ist
                 let EisdealerInArea = false;
+
                 allObjects.forEach(dealer => {
                     if (dealer instanceof Eisdealer) {
                         const distanceEisdealer = Math.sqrt(Math.pow(dealer.x - item.x, 2) + Math.pow(dealer.y - item.y, 2));
@@ -176,11 +179,10 @@ namespace Eisdealer {
                     }
                 });
 
-                if (customerClicked && distance <= 50 && EisdealerInArea) { 
+                if (customerClicked && distance <= 50 && EisdealerInArea && !orderChecked) { 
                     checkOrder(item as Customer); //Zugriff auf den bestimmten Customer
-                    // customerClicked = false;
                 }
-                if (customerClicked && distance <= 50 && item.customerPay && EisdealerInArea) {
+                if (customerClicked && distance <= 50 && item.customerPay && EisdealerInArea && orderChecked) {
                     console.log("geld einsammeln");
                     const amount = item.getReceipt();
 
@@ -265,6 +267,7 @@ namespace Eisdealer {
 
     function checkOrder(customer: Customer): void {
         customer.orderCorrect = true; // Variable zur Überprüfung, ob die Bestellung korrekt ist
+        customer.orderChecked = true;
     
         // Überprüfe die Anzahl
         if (chosenScoops.length !== customer.order.length) {

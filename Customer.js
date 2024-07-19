@@ -15,6 +15,7 @@ var Eisdealer;
         customerPay = false;
         paid = false;
         orderCorrect = false;
+        orderChecked = false;
         constructor(_x, _y, _direction, _speed, _type, allObjects) {
             super(_x, _y, _direction, _speed, _type);
             this.radius = 40;
@@ -25,6 +26,7 @@ var Eisdealer;
             this.allObjects = allObjects;
             this.order = [];
             this.orderCompleted = false;
+            this.orderChecked = false;
         }
         move() {
             switch (this.state) {
@@ -88,6 +90,7 @@ var Eisdealer;
             let customerY = 600;
             let customer = new Customer(customerX, customerY, new Eisdealer.Vector(0, 0), new Eisdealer.Vector(4, 4), `Customer ${Eisdealer.customerCount + 1}`, Eisdealer.allObjects);
             Eisdealer.allObjects.push(customer); // Kunden zu allObjects hinzufügen
+            this.orderChecked = false;
             customer.state = "walk in";
             customer.emotion = "happy";
             Eisdealer.customerCount++; // Erhöhe die Kundenanzahl
