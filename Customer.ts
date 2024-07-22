@@ -5,7 +5,6 @@ namespace Eisdealer {
     private radius: number;
     private skin: string;
     private hairColor: string;
-    
 
     private targetChair: Chair | null;
     public assignedChair: Chair | null;
@@ -258,58 +257,58 @@ namespace Eisdealer {
     crc2.arc(x, y + 10, 15, 0, Math.PI, false);
     crc2.strokeStyle = '#000000'; // Schwarzer Mund, wenn der Kunde glücklich ist
     crc2.stroke();
-}
+    }
 
-private drawCustomerAngry() {
-    const x = this.x;
-    const y = this.y;
-    const radius = this.radius;
-    const skin = this.skin;
-    const hairColor = this.hairColor;
+    private drawCustomerAngry() {
+        const x = this.x;
+        const y = this.y;
+        const radius = this.radius;
+        const skin = this.skin;
+        const hairColor = this.hairColor;
 
-    // Haare
-    crc2.beginPath();
-    crc2.arc(x, y, radius + 10, 0, Math.PI * 2); // Etwas größerer Kreis
-    crc2.fillStyle = hairColor;
-    crc2.fillRect(x - (radius + 10), y + radius - 40, 100, 50);
-    crc2.fill();
+        // Haare
+        crc2.beginPath();
+        crc2.arc(x, y, radius + 10, 0, Math.PI * 2); // Etwas größerer Kreis
+        crc2.fillStyle = hairColor;
+        crc2.fillRect(x - (radius + 10), y + radius - 40, 100, 50);
+        crc2.fill();
 
-    // Ohren zeichnen
-    crc2.beginPath();
-    crc2.arc(x - radius, y, 10, 0, Math.PI);
-    crc2.arc(x + radius, y, 10, 0, Math.PI);
-    crc2.fillStyle = skin;
-    crc2.strokeStyle = "#52402a";
-    crc2.fill();
-    crc2.stroke();
+        // Ohren zeichnen
+        crc2.beginPath();
+        crc2.arc(x - radius, y, 10, 0, Math.PI);
+        crc2.arc(x + radius, y, 10, 0, Math.PI);
+        crc2.fillStyle = skin;
+        crc2.strokeStyle = "#52402a";
+        crc2.fill();
+        crc2.stroke();
 
-    // Kopf
-    crc2.beginPath();
-    crc2.arc(x, y, radius, 0, Math.PI * 2);
-    crc2.fillStyle = skin;
-    crc2.strokeStyle = "#52402a";
-    crc2.fill();
-    crc2.stroke();
+        // Kopf
+        crc2.beginPath();
+        crc2.arc(x, y, radius, 0, Math.PI * 2);
+        crc2.fillStyle = skin;
+        crc2.strokeStyle = "#52402a";
+        crc2.fill();
+        crc2.stroke();
 
-    // Pony (Viertelkreis oben auf dem Kopf)
-    crc2.beginPath();
-    crc2.arc(x, y - radius / 8, radius, Math.PI * 1.15, Math.PI * 1.85); // Pony etwas nach oben verschoben
-    crc2.fillStyle = hairColor;
-    crc2.fill();
+        // Pony (Viertelkreis oben auf dem Kopf)
+        crc2.beginPath();
+        crc2.arc(x, y - radius / 8, radius, Math.PI * 1.15, Math.PI * 1.85); // Pony etwas nach oben verschoben
+        crc2.fillStyle = hairColor;
+        crc2.fill();
 
-    // Augen zeichnen
-    crc2.beginPath();
-    crc2.arc(x - 15, y - 10, 5, 0, Math.PI * 2);
-    crc2.arc(x + 15, y - 10, 5, 0, Math.PI * 2);
-    crc2.fillStyle = '#000000';
-    crc2.fill();
+        // Augen zeichnen
+        crc2.beginPath();
+        crc2.arc(x - 15, y - 10, 5, 0, Math.PI * 2);
+        crc2.arc(x + 15, y - 10, 5, 0, Math.PI * 2);
+        crc2.fillStyle = '#000000';
+        crc2.fill();
 
-    // Mund zeichnen
-    crc2.beginPath();
-    crc2.arc(x, y + 10, 15, Math.PI, 2 * Math.PI, false);
-    crc2.strokeStyle = '#ff0000'; // Roter Mund, wenn der Kunde nicht glücklich ist
-    crc2.stroke();
-}
+        // Mund zeichnen
+        crc2.beginPath();
+        crc2.arc(x, y + 10, 15, Math.PI, 2 * Math.PI, false);
+        crc2.strokeStyle = '#ff0000'; // Roter Mund, wenn der Kunde nicht glücklich ist
+        crc2.stroke();
+    }
 
     public drawCustomer() {
         switch (this.emotion) {

@@ -82,16 +82,16 @@ namespace Eisdealer {
 
     let earningsTotal = 0
 
-        function updateEarnings(amount: number): void {
-            //console.log("update earnings");
-        earningsTotal += amount;
-        if (earningsDisplay) {
-            earningsDisplay.innerHTML = `Einnahmen: ${earningsTotal} €`;
-            //console.log(`Einnahmen aktualisiert: ${earningsTotal} €`);
-        } else {
-            console.error("earningsDisplay is null or undefined.");
-        }
-        }
+    function updateEarnings(amount: number): void {
+        //console.log("update earnings");
+    earningsTotal += amount;
+    if (earningsDisplay) {
+        earningsDisplay.innerHTML = `Einnahmen: ${earningsTotal} €`;
+        //console.log(`Einnahmen aktualisiert: ${earningsTotal} €`);
+    } else {
+        console.error("earningsDisplay is null or undefined.");
+    }
+    }
 
     function animate(): void {
         drawBackround();
